@@ -28,7 +28,7 @@ const PAUSA_MODELO_MS = 60 * 1000;       // modelo saturado o sin cuota: se salt
 /** Servicios que se prueban, en orden: el que se pida ("aistudio" o "vertex") o, en automático, los dos. */
 export const ordenProveedores = (proveedor = "auto") => (proveedor in PROVEEDORES ? [proveedor] : ["aistudio", "vertex"]);
 
-export class ErrorGemini extends Error {
+class ErrorGemini extends Error {
   /**
    * @param {string} mensaje para la persona, en español
    * @param {{ estado?: number, tipo?: string, detalle?: string, ayuda?: string }} info

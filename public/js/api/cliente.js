@@ -47,8 +47,3 @@ export const buscarOficial = ({ q = "", capitulo = "", desde = 0, limite = 40 } 
   pedir("GET", `/listas-oficiales/gobernacion-2024?${new URLSearchParams({ q, capitulo, desde, limite })}`);
 export const capitulosOficiales = () => pedir("GET", "/listas-oficiales/gobernacion-2024/capitulos");
 
-export const listarObras = () => pedir("GET", "/obras");
-export const obtenerObra = id => pedir("GET", `/obras/${encodeURIComponent(id)}`);
-export const crearObra = (nombre, datos) => pedir("POST", "/obras", { nombre, datos });
-export const actualizarObra = (id, nombre, datos) => pedir("PUT", `/obras/${encodeURIComponent(id)}`, { nombre, datos });
-export const eliminarObra = id => pedir("DELETE", `/obras/${encodeURIComponent(id)}`);

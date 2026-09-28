@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { calcularObra, resumirObra } from "../../src/servicios/calculo.servicio.js";
+import { calcularObra } from "../../src/servicios/calculo.servicio.js";
 import { limpiarObra } from "../../src/servicios/obra-entrada.js";
 
 const bano = { tipo: "bano", cantidad: 1, medidas: { largo: 2, ancho: 1.5, alto: 2.4 } };
@@ -75,9 +75,4 @@ test("precios inválidos se descartan", () => {
   const o = limpiarObra({ precios: { cem: -5, xyz: 100, are: "abc", gra: 90000 }, preciosActividad: { "NO-1": 5, "PAN-01": 0 } });
   assert.deepEqual(o.precios, { gra: 90000 });
   assert.deepEqual(o.preciosActividad, {});
-});
-
-test("resumen para el historial", () => {
-  const r = resumirObra({ elementos: [bano], hechas: [] });
-  assert.ok(r.total > 0 && r.dias > 0 && r.avance === 0);
 });

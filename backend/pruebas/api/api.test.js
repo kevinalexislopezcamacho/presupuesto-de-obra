@@ -1,22 +1,18 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import { crearApp } from "../../src/app.js";
 
-let servidor, base, carpeta;
+const CONFIG = { carpetaFrontend: "", origenPermitido: "", registrarPeticiones: false };
+let servidor, base;
 
 before(async () => {
-  carpeta = await fs.mkdtemp(path.join(os.tmpdir(), "obras-"));
-  const app = crearApp({ archivoObras: path.join(carpeta, "obras.json"), carpetaFrontend: "", origenPermitido: "", registrarPeticiones: false });
+  const app = crearApp(CONFIG);
   await new Promise(listo => { servidor = app.listen(0, listo); });
   base = `http://127.0.0.1:${servidor.address().port}/api`;
 });
 
 after(async () => {
   await new Promise(listo => servidor.close(listo));
-  await fs.rm(carpeta, { recursive: true, force: true });
 });
 
 const pedir = async (metodo, ruta, cuerpo) => {
@@ -65,6 +61,7 @@ test("errores de entrada: 400 con mensaje claro", async () => {
   assert.equal(estado, 400);
   assert.match(cuerpo.error.mensaje, /obra/);
   assert.equal((await pedir("GET", "/no-existe")).estado, 404);
+  assert.equal((await pedir("GET", "/obras")).estado, 404);     // "Mis obras" se guarda en el navegador
 });
 
 test("sin clave de IA, el diagnóstico lo dice y el intérprete usa reglas", async () => {
@@ -77,7 +74,7 @@ test("con IA, la API responde con lo que entendió la IA ya verificado", async (
     partes: [{ texto: "dos cocinas de 3 x 2,5", tipo: "cocina", cantidad: 2, largo: 3, ancho: 2.5, alto: null, area: null, vanos: null,
       puertas: null, ventanas: null, meson: null, banos: null, sistema: "sin-especificar", excluir: [] }],
     trabajos: [], materiales: [], observaciones: [], noSoportado: [], dudas: [] } }) };
-  const app = crearApp({ archivoObras: path.join(carpeta, "otra.json"), carpetaFrontend: "", origenPermitido: "", registrarPeticiones: false }, { ia });
+  const app = crearApp(CONFIG, { ia });
   const otro = await new Promise(listo => { const s = app.listen(0, () => listo(s)); });
   try {
     const r = await fetch(`http://127.0.0.1:${otro.address().port}/api/interpretaciones/obra`, {
@@ -88,22 +85,4 @@ test("con IA, la API responde con lo que entendió la IA ya verificado", async (
   } finally {
     await new Promise(listo => otro.close(listo));
   }
-});
-
-test("CRUD de obras", async () => {
-  const datos = { elementos: [{ tipo: "bano" }], ejecucion: "directo" };
-  const creada = await pedir("POST", "/obras", { nombre: "Baño de prueba", datos });
-  assert.equal(creada.estado, 201);
-  assert.ok(creada.cuerpo.resumen.total > 0);
-  const id = creada.cuerpo.id;
-
-  const lista = await pedir("GET", "/obras");
-  assert.equal(lista.cuerpo.length, 1);
-  assert.equal(lista.cuerpo[0].nombre, "Baño de prueba");
-
-  const actualizada = await pedir("PUT", `/obras/${id}`, { nombre: "Baño listo", datos: { ...datos, hechas: ["CON-05"] } });
-  assert.ok(actualizada.cuerpo.resumen.avance > 0);
-
-  assert.equal((await pedir("DELETE", `/obras/${id}`)).estado, 204);
-  assert.equal((await pedir("GET", `/obras/${id}`)).estado, 404);
 });

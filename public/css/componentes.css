@@ -100,13 +100,6 @@ details[open] summary { margin-bottom: 12px; }
 .buscar { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--card); margin: 12px 0 4px; font-size: 16px; }
 
 /* Opciones grandes */
-.opciones { display: grid; gap: 12px; }
-@media (min-width: 640px) { .opciones { grid-template-columns: 1fr 1fr; } }
-.opcion { text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 16px; padding: 20px; cursor: pointer; box-shadow: var(--sombra); }
-.opcion:hover { border-color: var(--muted); }
-.opcion[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.opcion strong { display: block; font-size: 18px; }
-.opcion span { color: var(--muted); }
 
 /* Tablas y secciones */
 .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }

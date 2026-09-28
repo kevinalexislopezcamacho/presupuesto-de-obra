@@ -14,6 +14,9 @@ export const TIPOS = {
   casa:   { nombre: "Una casa", desc: "Un piso, obra gris y acabados básicos",
             campos: [["largo", "Largo de la planta", 10], ["ancho", "Ancho de la planta", 7], ["alto", "Alto de muros", 2.5], ["banos", "Número de baños", 1]] }
 };
+/** Los tipos de construcción, en el orden en que se muestran. */
+export const TIPOS_OBRA = Object.keys(TIPOS);
+
 // Nombres para mostrar cantidades ("4 muros", "1 baño").
 export const NOMBRES_TIPO = {
   muro: ["muro", "muros"], bano: ["baño", "baños"], cocina: ["cocina", "cocinas"],

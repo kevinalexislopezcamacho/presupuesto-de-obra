@@ -18,8 +18,8 @@ import { convertirUnidad, quitarMiles, elegirTipo, unidadEscrita } from "../domi
 import { revisarTrabajo, interpretarTexto, extraerMedidas, notaDistribucionCasa, hablaDeEspaciosCasa } from "../dominio/texto/interprete.js";
 import { limpiarTexto, normalizar } from "../dominio/texto/normalizar.js";
 import { CATEGORIAS_NO_SOPORTADO } from "./instrucciones.js";
+import { esObjeto } from "../utilidades/valores.js";
 
-const esObjeto = v => v !== null && typeof v === "object" && !Array.isArray(v);
 const lista = v => (Array.isArray(v) ? v.filter(esObjeto) : []);
 const cadena = (v, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 

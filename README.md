@@ -30,24 +30,24 @@ Luego se abre **http://localhost:3000** en el navegador. El backend sirve la API
 
 Sin IA la herramienta funciona con su intérprete por reglas. Con IA entiende mejor lo que se escribe: pedidos como "sin enchape", "remodelar", marcas o acabados, y materiales escritos de cualquier forma.
 
-1. Saca una clave gratuita en [Google AI Studio](https://aistudio.google.com/apikey). La herramienta prueba primero AI Studio (gratis, sin facturación) y, si la clave no sirve ahí, Vertex AI (pide facturación en Google Cloud).
-2. En `backend/`, copia `.env.example` como `.env` y pon la clave en `GEMINI_API_KEY=`.
-3. Prueba la conexión con `npm run ia:probar`: dice qué tipo de clave es, si cada modelo responde y, si algo falla, cómo arreglarlo. Luego usa `npm start` como siempre.
+1. Saque una clave gratuita en [Google AI Studio](https://aistudio.google.com/apikey). La herramienta prueba primero AI Studio (gratis, sin facturación) y, si la clave no sirve ahí, Vertex AI (pide facturación en Google Cloud).
+2. En `backend/`, copie `.env.example` como `.env` y ponga la clave en `GEMINI_API_KEY=`.
+3. Pruebe la conexión con `npm run ia:probar`: dice qué tipo de clave es, si cada modelo responde y, si algo falla, cómo arreglarlo. Luego use `npm start` como siempre.
 
 El modelo principal es `gemini-3.5-flash-lite`, que en las pruebas respondió en unos 2 segundos. Si está saturado o sin cuota, la herramienta prueba los de respaldo (`GEMINI_MODELOS_RESPALDO`: `gemini-3.8-flash` y `gemini-3.5-flash`); si ninguno responde, sigue con reglas.
 
-La clave queda en el servidor y nunca llega al navegador. **No subas el archivo `.env` a ningún repositorio**: ya está en `.gitignore`.
+La clave queda en el servidor y nunca llega al navegador. **No suba el archivo `.env` a ningún repositorio**: ya está en `.gitignore`.
 
 | Comando (en `backend/`) | Qué hace |
 |---|---|
 | `npm start` | Inicia el servidor |
 | `npm run dev` | Inicia el servidor y lo reinicia solo al cambiar el código |
-| `npm test` | Corre las pruebas automáticas (dominio, IA, repositorio, servicios y API) |
+| `npm test` | Corre las pruebas automáticas (dominio, IA, servicios y API) |
 | `npm run docs` | Regenera `docs/precios-y-fuentes.md` y `docs/modelo-y-pruebas.md` desde los datos |
 | `npm run ia:probar` | Diagnostica la clave de Gemini: en qué servicio funciona, cada modelo y dos frases de prueba |
 | `npm run ia:evaluar` | Evalúa a Gemini con las mismas frases que el modelo propio y escribe `docs/evaluacion-ia.md` (unos 15 minutos) |
 
-La configuración (puerto, archivo de obras, CORS, IA) está en `backend/.env.example`.
+La configuración (puerto, CORS, IA) está en `backend/.env.example`.
 
 ## Estructura
 
@@ -69,10 +69,9 @@ presupuesto-obra-cali/
 │   │   │   └── texto/            Normalización, clasificador Naive Bayes, modelo e intérprete
 │   │   ├── datos/                Precios con fuente, APU, supuestos, tipos de obra, vocabulario,
 │   │   │                         frases de entrenamiento y referencias oficiales
-│   │   ├── repositorios/         Obras guardadas en un archivo JSON
 │   │   ├── middlewares/          Seguridad y CORS, registro, validación y errores
 │   │   └── utilidades/           Error HTTP
-│   ├── pruebas/                  node:test → dominio/, ia/, repositorios/, servicios/, api/
+│   ├── pruebas/                  node:test → dominio/, ia/, servicios/, api/
 │   ├── scripts/                  generar-docs.js, probar-ia.js, evaluar-ia.js y listas-oficiales/ (transcripción del PDF oficial)
 │   ├── .env.example              Variables de entorno disponibles
 │   └── package.json
@@ -188,8 +187,8 @@ Los precios de referencia con más de 90 días se marcan en la aplicación para 
 
 - **Qué calcula:** obra gris de un piso con acabados básicos. No calcula por su cuenta techos, escaleras, redes eléctricas, pintura, carpintería ni más de un piso; si se piden, lo avisa, y esos ítems se pueden agregar desde la lista oficial de la Gobernación con su precio oficial.
 - **Lista oficial:** es de 2024 y se transcribió con OCR; los valores marcados "por verificar" conviene confirmarlos en la página indicada del PDF. Los ítems con precio oficial no tienen composición publicada, y su rendimiento para el cronograma es de referencia.
-- **Precios:** son de tiendas grandes, no cotizaciones de depósitos locales. El alquiler de equipos es de Bogotá y Medellín, porque no hay tarifa publicada en Cali.
-- **Por revisar:** la viga de cimentación sale 87 % por encima de la referencia de la Gobernación y la zapata 26 %. En la viga, la mitad del costo es mano de obra (3 horas-hombre por metro), y la formaleta de EMCALI ya incluye su instalación. En la zapata pesa la arena, que en la fuente cuesta casi 3 veces lo que el triturado. Conviene revisar esas composiciones con un ingeniero; mientras tanto, la aplicación marca las diferencias y deja usar la referencia oficial o una cotización.
+- **Precios:** los materiales que más pesan tienen de dos a cuatro precios de tiendas de Cali y Jamundí (grandes superficies y depósitos), pero no reemplazan una cotización de la obra. El alquiler de equipos es de Bogotá y Medellín, porque no hay tarifa publicada en Cali.
+- **Por revisar:** el muro en bloque de concreto, las columnas de confinamiento, la placa de contrapiso y el enchape quedan entre 26 % y 31 % por debajo de la referencia de la Gobernación 2024. Los materiales ya se verificaron en tiendas, así que la diferencia está en la mano de obra y los rendimientos: conviene confirmarlos con maestros de obra o un ingeniero. Mientras tanto, la aplicación marca esas actividades y muestra un rango del presupuesto con el valor oficial.
 - **Cronograma:** cada actividad la hace una cuadrilla de un oficial con uno o dos ayudantes (según el APU). No descuenta festivos.
 - **IA:** la descripción se envía a Gemini (Google) cuando hay clave configurada, y la aplicación lo avisa en pantalla. La capa gratuita tiene límites de uso; si se agotan, la herramienta sigue con reglas.
-- **Obras guardadas:** se guardan en un archivo JSON, que alcanza para un prototipo. Para varios usuarios se cambia el repositorio por una base de datos.
+- **Obras guardadas:** "Mis obras" se guarda en el navegador de cada dispositivo, sin inicio de sesión. Se pierde si se borran los datos del navegador y no pasa de un dispositivo a otro; para eso haría falta una base de datos con usuarios.

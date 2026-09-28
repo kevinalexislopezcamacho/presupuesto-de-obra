@@ -1,9 +1,9 @@
 /**
  * Resultado: total, avisos, y pestañas de presupuesto, cronograma, compras y precios.
  */
-import { estado, PANTALLA } from "../estado/estado.js";
+import { estado } from "../estado/estado.js";
 import { catalogo, insumo, nombreTipo, nombreCantidad, nombreCortoApu } from "../estado/catalogo.js";
-import { esc, num, coef, pesos, mayus } from "../utilidades/formato.js";
+import { esc, num, coef, pesos } from "../utilidades/formato.js";
 import { aISO, diaHabil, fechaCorta } from "../utilidades/fechas.js";
 import { mapsBuscar } from "../utilidades/navegador.js";
 import { describirElemento, nombrePorDefecto, cargando, nombreActividad } from "./comunes.js";

@@ -10,12 +10,12 @@ import {
 import { REFERENCIAS_OFICIALES } from "../datos/referencias-oficiales.js";
 import { ALTERNATIVAS, CONVERSIONES } from "../datos/materiales.js";
 import { TIENDAS_CALI } from "../datos/tiendas.js";
-import { TIPOS, NOMBRES_TIPO } from "../datos/tipos-obra.js";
+import { TIPOS, TIPOS_OBRA, NOMBRES_TIPO } from "../datos/tipos-obra.js";
 import { AIU_CALI_2026 } from "../dominio/presupuesto.js";
 import { analizarAPU, cuadrilla } from "../dominio/apu.js";
 import { actividadesDelTipo } from "../dominio/actividades.js";
 import { FASES, ordenFase } from "../dominio/cronograma.js";
-import { TIPOS_OBRA, UNIDADES_COTIZADO } from "./obra-entrada.js";
+import { UNIDADES_COTIZADO } from "./obra-entrada.js";
 import { HUECOS_TIPICOS, HUECO_TIPICO } from "../dominio/huecos.js";
 import { LIMITE_REFERENCIA } from "../datos/referencias-oficiales.js";
 import { CAPITULOS } from "../datos/capitulos.js";

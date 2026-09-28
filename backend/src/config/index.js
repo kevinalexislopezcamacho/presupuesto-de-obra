@@ -10,8 +10,6 @@ try { process.loadEnvFile(path.join(raizBackend, ".env")); } catch { /* sin .env
 
 export const config = Object.freeze({
   puerto: Number(process.env.PUERTO || process.env.PORT || 3000),
-  // Archivo JSON donde se guardan las obras terminadas.
-  archivoObras: process.env.ARCHIVO_OBRAS || path.join(raizBackend, "almacenamiento", "obras.json"),
   // Carpeta de la página (public/, el nombre que usa Vercel) que el servidor entrega en "/"; vacío para no servirla.
   carpetaFrontend: process.env.CARPETA_FRONTEND ?? path.resolve(raizBackend, "..", "public"),
   // Origen permitido para llamar la API desde otro dominio (por ejemplo, un servidor de desarrollo del frontend).

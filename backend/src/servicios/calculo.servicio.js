@@ -212,14 +212,3 @@ export function calcularObra(entrada) {
       sinProgramar: lineas.filter(l => !(l.rendimiento > 0)).map(l => l.codigo) }
   };
 }
-
-/** Resumen de una obra para el historial. */
-export function resumirObra(entrada) {
-  const c = calcularObra(entrada);
-  return {
-    total: Math.round(c.presupuesto.total),
-    porInvertir: Math.round(c.presupuesto.porInvertir),
-    dias: c.cronograma.avance.falta,
-    avance: Math.round(c.cronograma.avance.pct * 100)
-  };
-}

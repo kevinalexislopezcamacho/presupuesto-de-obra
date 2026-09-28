@@ -32,7 +32,7 @@ export function baseMayoritaria(datos) {
 }
 
 /** El tipo que nombra la frase por palabra clave ("baño", "tapia"…), o null si no nombra ninguno. */
-export function porPalabraClave(frase) {
+function porPalabraClave(frase) {
   const t = normalizar(frase);
   let mejor = null;
   for (const [tipo, re] of Object.entries(PALABRAS_TIPO)) {

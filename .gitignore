@@ -1,7 +1,7 @@
 # Dependencias
 node_modules/
 
-# Datos que genera el servidor al usarse (obras guardadas)
+# Obras que guardaba el servidor en versiones anteriores (ahora "Mis obras" está en el navegador)
 backend/almacenamiento/
 
 # Configuración local

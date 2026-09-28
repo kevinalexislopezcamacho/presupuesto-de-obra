@@ -9,7 +9,6 @@ import { estado, datosDeObra, cargarDatosObra, reiniciarObra, PANTALLA } from ".
 import { detenerCronometro } from "../utilidades/cronometro.js";
 
 const CLAVE = "presupuesto-obra-cali:mis-obras";
-const CLAVE_COPIADAS = "presupuesto-obra-cali:obras-del-servidor-copiadas";
 
 export const historial = {
   lista: [],          // resúmenes: [{ id, nombre, creada, actualizada, resumen, ejecucion, tiempo }]
@@ -47,26 +46,7 @@ async function resumenDe(datos) {
 const aLista = ({ datos, ...resto }) => ({ ...resto, ejecucion: datos.ejecucion, tiempo: datos.tiempo || null });
 const nuevoId = () => `o${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
-/**
- * Las obras que ya estaban guardadas en el servidor de este computador (versiones anteriores) se copian
- * una sola vez al navegador. Solo en el propio computador: en un sitio publicado no se copia nada.
- */
-async function copiarObrasDelServidor() {
-  if (!["localhost", "127.0.0.1"].includes(location.hostname)) return;
-  try {
-    if (localStorage.getItem(CLAVE_COPIADAS) || leer().length) return;
-    const obras = [];
-    for (const r of await api.listarObras()) {
-      const o = await api.obtenerObra(r.id);
-      obras.push({ id: o.id, nombre: o.nombre, creada: o.creada, actualizada: o.actualizada, datos: o.datos, resumen: o.resumen });
-    }
-    if (obras.length) escribir(obras);
-    localStorage.setItem(CLAVE_COPIADAS, new Date().toISOString());
-  } catch { /* sin servidor de obras o sin almacenamiento: se sigue con lo que haya */ }
-}
-
 export async function cargarHistorial() {
-  await copiarObrasDelServidor();
   // Se pide que el navegador no borre estos datos cuando necesite espacio (no todos lo permiten).
   try { await navigator.storage?.persist?.(); } catch { /* opcional */ }
   historial.lista = leer().sort((a, b) => String(b.actualizada).localeCompare(String(a.actualizada))).map(aLista);

@@ -3,9 +3,9 @@
  * devuelve solo los campos válidos o lanza un error 400 con un mensaje claro.
  */
 import { solicitudInvalida } from "../utilidades/error-http.js";
-import { TIPOS_OBRA } from "../servicios/obra-entrada.js";
+import { TIPOS_OBRA } from "../datos/tipos-obra.js";
+import { esObjeto } from "../utilidades/valores.js";
 
-const esObjeto = v => v !== null && typeof v === "object" && !Array.isArray(v);
 
 function textoObligatorio(valor, campo, max) {
   if (typeof valor !== "string" || !valor.trim()) throw solicitudInvalida(`El campo "${campo}" es obligatorio y debe ser texto.`);
@@ -51,8 +51,3 @@ export const esquemaExportacion = cuerpo => ({
   nombre: typeof cuerpo.nombre === "string" && cuerpo.nombre.trim() ? cuerpo.nombre.trim().slice(0, 80) : "Obra"
 });
 
-/** { nombre, datos } */
-export const esquemaObraGuardada = cuerpo => ({
-  nombre: typeof cuerpo.nombre === "string" && cuerpo.nombre.trim() ? cuerpo.nombre.trim().slice(0, 80) : "Obra",
-  datos: objetoObligatorio(cuerpo.datos, "datos")
-});

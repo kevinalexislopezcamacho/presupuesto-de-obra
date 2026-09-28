@@ -6,7 +6,7 @@
  */
 
 // Listado de la Gobernación del Valle 2024 (Decreto 1.22-1441): ver datos/listas-oficiales.
-export const URL_GOBERNACION_2024 = "https://cdnm.heyzine.com/files/uploaded/6974b64a5ee54ea4f0181b50808c40b0d7260a79.pdf";
+const URL_GOBERNACION_2024 = "https://cdnm.heyzine.com/files/uploaded/6974b64a5ee54ea4f0181b50808c40b0d7260a79.pdf";
 const gob = (item, precio) => ({ fuente: "Gobernación del Valle 2024", item, precio, url: URL_GOBERNACION_2024 });
 
 export const APU = [

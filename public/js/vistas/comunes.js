@@ -17,7 +17,7 @@ export function describirElemento(el) {
 }
 
 /** "2 puertas en arco", "ventana circular". */
-export function nombreHueco(h) {
+function nombreHueco(h) {
   const varias = h.cantidad > 1;
   const forma = h.forma === "arco" ? " en arco" : h.forma === "circular" ? (varias ? " circulares" : " circular") : "";
   return `${varias ? `${h.cantidad} ` : ""}${h.tipo}${varias ? "s" : ""}${forma}`;

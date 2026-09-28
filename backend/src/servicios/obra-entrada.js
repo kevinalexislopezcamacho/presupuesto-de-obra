@@ -7,13 +7,13 @@ import { INSUMOS } from "../datos/precios.js";
 import { AIU_CALI_2026 } from "../dominio/presupuesto.js";
 import { medidasPorDefecto, limpiarExcluidas } from "../dominio/actividades.js";
 import { limpiarHuecos } from "../dominio/huecos.js";
+import { TIPOS_OBRA } from "../datos/tipos-obra.js";
+import { esObjeto } from "../utilidades/valores.js";
 import { itemOficial, PREFIJO_OFICIAL } from "./listas-oficiales.servicio.js";
 
-export const TIPOS_OBRA = ["muro", "bano", "cocina", "cuarto", "casa"];
 const CODIGOS_APU = new Set(APU.map(a => a.codigo));
 // Una actividad válida: de la base de APU o un ítem de la lista oficial agregado al presupuesto ("GOB-100113").
 const esActividad = c => CODIGOS_APU.has(c) || (typeof c === "string" && c.startsWith(PREFIJO_OFICIAL) && Boolean(itemOficial(c)));
-const esObjeto = v => v !== null && typeof v === "object" && !Array.isArray(v);
 const numero = (v, porDefecto = 0) => (Number.isFinite(Number(v)) ? Number(v) : porDefecto);
 const texto = (v, max = 2000) => (typeof v === "string" ? v.slice(0, max) : "");
 const lista = v => (Array.isArray(v) ? v : []);

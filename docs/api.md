@@ -157,21 +157,4 @@ Un ítem oficial se agrega al presupuesto como actividad suelta con el código `
 
 ## Obras guardadas
 
-La interfaz guarda "Mis obras" en el navegador de cada dispositivo (no necesita estas rutas). Siguen disponibles para guardar obras en el servidor, en un archivo JSON, cuando se ejecuta en un equipo con disco permanente.
-
-| Método | Ruta | Cuerpo | Respuesta |
-|---|---|---|---|
-| GET | `/api/obras` | — | Lista de resúmenes, la más reciente primero |
-| POST | `/api/obras` | `{ "nombre": "Baño del patio", "datos": { …obra… } }` | 201 con la obra guardada |
-| GET | `/api/obras/:id` | — | La obra completa |
-| PUT | `/api/obras/:id` | `{ "nombre", "datos" }` | La obra actualizada |
-| DELETE | `/api/obras/:id` | — | 204 |
-
-Cada obra guardada tiene:
-
-- `id`
-- `nombre`
-- `creada`
-- `actualizada`
-- `datos`
-- `resumen`: `{ total, porInvertir, dias, avance }`, calculado por el servidor.
+"Mis obras" se guarda en el navegador de cada dispositivo (almacenamiento local), así que la API no tiene rutas para guardar obras. El resumen de cada una (total, días, avance) sale de `POST /api/calculos`.

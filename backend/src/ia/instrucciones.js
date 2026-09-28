@@ -6,17 +6,16 @@
 import { APU } from "../datos/apu.js";
 import { INSUMOS } from "../datos/precios.js";
 import { TIPOS_HUECO, FORMAS_HUECO } from "../dominio/huecos.js";
-import { TIPOS } from "../datos/tipos-obra.js";
+import { TIPOS, TIPOS_OBRA } from "../datos/tipos-obra.js";
 import { TRABAJOS, NO_SOPORTADO } from "../datos/lenguaje.js";
 import { actividadesDelTipo } from "../dominio/actividades.js";
 
-const TIPOS_OBRA = Object.keys(TIPOS);
 const CODIGOS_APU = APU.map(a => a.codigo);
 const CODIGOS_TRABAJO = TRABAJOS.map(t => t.codigo);
 const MATERIALES = Object.entries(INSUMOS).filter(([, i]) => i.tipo === "material");
 export const CATEGORIAS_NO_SOPORTADO = NO_SOPORTADO.map(([, nombre]) => nombre);
-export const UNIDADES_IA = ["bulto", "kg", "lb", "m3", "m2", "m", "und", "varilla", "caja", "tubo", "rollo", "viaje", "ninguna"];
-export const CALIBRES = ["1/4", "3/8", "1/2", "5/8", "3/4", "no-dice"];
+const UNIDADES_IA = ["bulto", "kg", "lb", "m3", "m2", "m", "und", "varilla", "caja", "tubo", "rollo", "viaje", "ninguna"];
+const CALIBRES = ["1/4", "3/8", "1/2", "5/8", "3/4", "no-dice"];
 // Lo que ya existe en una remodelación: muros, su estructura y la placa de piso.
 const ESTRUCTURA = ["MAM-01", "MAM-02", "CON-01", "CON-02", "CON-05", "ACE-01", "CON-04", "CON-03"];
 
