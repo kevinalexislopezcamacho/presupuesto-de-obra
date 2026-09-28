@@ -47,6 +47,13 @@ test("POST /interpretaciones/materiales usa la obra para decidir", async () => {
   assert.equal(cuerpo.materiales[0].id, "blc");
 });
 
+test("POST /interpretaciones/agregado separa lo que se construye de lo que se compra", async () => {
+  const { estado, cuerpo } = await pedir("POST", "/interpretaciones/agregado", { texto: "pañetar 20 m2 y 10 bultos de cemento", obra: { elementos: [] } });
+  assert.equal(estado, 200);
+  assert.deepEqual([cuerpo.trabajos[0].codigo, cuerpo.materiales[0].id], ["PAN-01", "cem"]);
+  assert.equal((await pedir("POST", "/interpretaciones/agregado", { texto: "" })).estado, 400);
+});
+
 test("POST /calculos devuelve presupuesto, cronograma y materiales", async () => {
   const { cuerpo } = await pedir("POST", "/calculos", { obra: { elementos: [{ tipo: "cocina" }] } });
   assert.ok(cuerpo.presupuesto.total > 0);

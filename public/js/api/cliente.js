@@ -27,6 +27,7 @@ export const obtenerDiagnostico = () => pedir("GET", "/diagnostico");
 export const interpretarObra = texto => pedir("POST", "/interpretaciones/obra", { texto });
 export const leerMedidas = (texto, tipo) => pedir("POST", "/interpretaciones/medidas", { texto, tipo });
 export const leerMateriales = (texto, obra) => pedir("POST", "/interpretaciones/materiales", { texto, obra });
+export const interpretarAgregado = (texto, obra) => pedir("POST", "/interpretaciones/agregado", { texto, obra });
 
 export const calcular = obra => pedir("POST", "/calculos", { obra });
 

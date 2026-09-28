@@ -20,6 +20,7 @@ export function crearRutas({ servicioInterprete }) {
   rutas.post("/interpretaciones/obra", validar(esquemaTexto), consulta.interpretarDescripcion);
   rutas.post("/interpretaciones/medidas", validar(esquemaMedidas), consulta.interpretarMedidas);
   rutas.post("/interpretaciones/materiales", validar(esquemaMateriales), consulta.interpretarMateriales);
+  rutas.post("/interpretaciones/agregado", validar(esquemaMateriales), consulta.interpretarAgregado);
 
   rutas.post("/calculos", validar(esquemaCalculo), consulta.calcular);
   rutas.post("/exportaciones/excel", validar(esquemaExportacion), consulta.exportarExcel);

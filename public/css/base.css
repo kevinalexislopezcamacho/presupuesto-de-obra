@@ -29,7 +29,7 @@
 }
 
 /* Pantallas con tablas, tarjetas o dos columnas usan todo el ancho disponible. */
-body[data-pantalla="medidas"], body[data-pantalla="resultado"], body[data-pantalla="fuentes"], body[data-pantalla="oficial"] { --ancho: 1120px; }
+body[data-pantalla="inicio"], body[data-pantalla="medidas"], body[data-pantalla="resultado"], body[data-pantalla="fuentes"], body[data-pantalla="oficial"] { --ancho: 1120px; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--barra) + 12px); }

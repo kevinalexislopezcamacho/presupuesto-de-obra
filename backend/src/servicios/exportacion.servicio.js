@@ -138,10 +138,10 @@ export async function presupuestoExcel(entrada, nombre = "Obra") {
   const hc = libro.addWorksheet("Compras");
   hc.columns = [{ width: 40 }, { width: 12 }, { width: 10 }, { width: 16 }, { width: 14 }, { width: 30 }];
   encabezado(hc, "LISTA DE COMPRAS", nombre, obra);
-  filaTitulos(hc, ["Material", "Cantidad", "Unidad", "Costo aprox.", "Estado", "Dónde"]);
+  filaTitulos(hc, ["Material o ítem", "Cantidad", "Unidad", "Costo aprox.", "Estado", "Dónde"]);
+  const origen = { oficial: "Lista oficial de la Gobernación", cotizado: "Según la cotización" };
   for (const x of c.compras) {
-    const ins = INSUMOS[x.id];
-    const f = hc.addRow([ins.nombre, x.cantidad, ins.unidad, Math.round(x.costo), x.comprado ? "Comprado" : "Por comprar", ins.tienda || ""]);
+    const f = hc.addRow([x.nombre, x.cantidad, x.unidad, Math.round(x.costo), x.comprado ? "Comprado" : "Por comprar", origen[x.tipo] || x.tienda]);
     f.getCell(4).numFmt = PESOS;
   }
 

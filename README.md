@@ -99,6 +99,8 @@ El detalle de las capas y de por qué se organizó así está en [`docs/arquitec
 
 ## Cómo se usa
 
+La pantalla principal presenta la herramienta: un presupuesto de ejemplo (un baño de 2 × 1,5 m) que se calcula al abrirla con los precios vigentes, cómo funciona en tres pasos, lo que se obtiene, las referencias oficiales y "Mis obras".
+
 1. **Descripción de la obra.** Se escribe, por ejemplo: *"Remodelar el baño de 2 x 1,5 sin cambiar el piso y 3 muros de 4 x 2,5 en bloque de concreto"*.
    - Entiende muros, baños, cocinas, cuartos, casas de un piso, remodelaciones y actividades sueltas (pañetar, enchapar, piso, placa, columnas…).
    - Entiende lo que no se incluye ("sin enchape", "sin cambiar el piso") y las remodelaciones: no cobra muros, estructura ni placa que ya existen, y agrega la demolición del enchape y el piso que se cambian.
@@ -119,7 +121,8 @@ El detalle de las capas y de por qué se organizó así está en [`docs/arquitec
    - **Presupuesto** por capítulos (1. Preliminares, 2. Excavaciones y rellenos, 3. Cimentación…), con ítems numerados y subtotales. Cada ítem se despliega y muestra su **APU** (insumos, cantidades, precios con fuente, rendimiento y cuadrilla, o el precio oficial), su **memoria de cantidades** y la referencia oficial.
    - Se descarga en **Excel** (hojas de presupuesto con fórmulas, APU, memoria de cantidades, compras y cronograma) y en **PDF**.
    - En Cronograma se marcan las actividades hechas, y bajan los días que faltan.
-   - En Compras se marca lo comprado, y baja lo que falta por invertir.
+   - **Agregar algo rápido:** junto al total hay un cuadro para escribir sin volver a los pasos. Las obras y los trabajos ("un muro de 3 x 2", "pañetar 20 m²") se suman al presupuesto; los materiales sueltos ("10 bultos de cemento") van a Compras como compra adicional, en el capítulo "Materiales adicionales", y suman su costo.
+   - En Compras están los materiales que faltan y también los ítems de la lista oficial y los cotizados, con su precio. Se marca lo comprado o contratado, y baja lo que falta por invertir (el total no cambia).
    - En Precios se registran las cotizaciones, por material o por actividad completa, y todo se recalcula. Las actividades que se alejan más de 25 % de su referencia oficial **equivalente** (el mismo elemento y formato, con valor verificado) se marcan; las que no son el mismo producto se muestran como "orientativas" y no marcan.
    - Si hay actividades marcadas, el resumen muestra un **rango**: el total si esas actividades costaran lo oficial (también sale en el PDF y el Excel). Sirve para dejar margen hasta tener cotizaciones.
    - Con "Terminado", la obra queda en "Mis obras" con sus precios y el **tiempo que tomó elaborarla**. Desde "Mis obras" se descargan los tiempos en CSV para la validación con arquitectos.

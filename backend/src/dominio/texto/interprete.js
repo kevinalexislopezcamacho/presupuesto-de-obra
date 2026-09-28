@@ -40,6 +40,8 @@ function hallarTrabajos(t) {
     .map(h => ({ codigo: h.codigo, medida: h.medida, pos: h.m.index, negado: RE_NEGACION.test(t.slice(0, h.m.index)) }));
 }
 const trabajosEn = t => hallarTrabajos(t).filter(h => !h.negado);
+/** Si el texto nombra una construcción o un trabajo ("un muro…", "pañetar…"): sus materiales no son una compra aparte. */
+export const nombraObra = texto => { const t = limpiarTexto(texto); return Boolean(primerTipo(t)) || trabajosEn(t).length > 0; };
 
 /** Actividades que la persona pidió quitar de una parte: "sin enchape", "remodelar" (ya hay muros y placa). */
 function exclusionesDe(texto, tipo) {

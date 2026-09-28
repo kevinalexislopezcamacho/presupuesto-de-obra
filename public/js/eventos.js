@@ -9,7 +9,7 @@ import { historial, guardarObraActual, abrirObra, borrarObra } from "./estado/hi
 import {
   aplicarInterpretacion, resolverDuda, cambiarMaterial, deshacerCambio, agregarMateriales, quitarMaterial,
   dejarAparte, convertirCantidad, agregarElemento, alternarActividad, alternarRemodelacion, agregarTrabajo, ponerPrecio, marcar,
-  agregarHueco, quitarHueco, cambiarHueco, faltaEnCotizado, agregarCotizado, cambiarCotizado
+  agregarHueco, quitarHueco, cambiarHueco, faltaEnCotizado, agregarCotizado, cambiarCotizado, agregarRapido
 } from "./acciones/obra.js";
 import { descargarExcel, imprimirPresupuesto, descargarTiempos } from "./acciones/exportar.js";
 import { textoPresupuesto, textoCompras } from "./acciones/exportar.js";
@@ -79,6 +79,7 @@ const interpretar = () => {
 const ACCIONES = {
   nueva: () => pantalla(() => { reiniciarObra(); estado.mensaje = ""; estado.pantalla = PANTALLA.OBRA; }),
   volver: () => ir(estado.volverA),
+  "agregar-rapido": () => (estado.ocupado ? undefined : obra(() => esperando("Agregando…", agregarRapido))),
   "agregar-cotizado": () => {
     const falta = faltaEnCotizado();
     if (falta) return pantalla(() => { estado.nuevoCotizado.error = falta; });
@@ -147,6 +148,7 @@ const CLICS = [
   ["agregarHueco", valor => obra(() => agregarHueco(valor))],
   ["quitarHueco", (valor, ds) => obra(() => quitarHueco(valor, Number(ds.indice)))],
   ["quitarCotizado", valor => obra(() => { estado.cotizados = estado.cotizados.filter(x => x.id !== valor); })],
+  ["quitarAdicional", valor => obra(() => { delete estado.comprasAdicionales[valor]; })],
   ["materiales", valor => pantalla(() => { estado.pantalla = PANTALLA.MATERIALES; estado.pasoMateriales = valor; })],
   ["quitarMaterial", valor => obra(() => quitarMaterial(valor))],
   ["aparte", valor => pantalla(() => dejarAparte(valor))],
@@ -213,6 +215,7 @@ const ESCRITURA = {
   "texto-materiales": v => { estado.textoMateriales = v; },
   "nombre-obra": v => { estado.nombreObra = v; },
   "oficial-q": v => { estado.oficial.q = v; },
+  rapido: v => { estado.textoRapido = v; },
   "cot-nombre": v => { estado.nuevoCotizado.nombre = v; },
   "cot-unidad": v => { estado.nuevoCotizado.unidad = v; },
   "cot-cantidad": v => { estado.nuevoCotizado.cantidad = v; },
@@ -249,6 +252,7 @@ export function registrarEventos() {
     else if (id === "texto-materiales") { e.preventDefault(); ACCIONES["agregar-materiales"](); }
     else if (id === "oficial-q") { e.preventDefault(); buscarOficial(); }
     else if (id.startsWith("cot-")) { e.preventDefault(); ACCIONES["agregar-cotizado"](); }
+    else if (id === "rapido") { e.preventDefault(); ACCIONES["agregar-rapido"](); }
     else if (id.startsWith("o-")) $(`[data-agregar-oficial="${id.slice(2)}"]`)?.click();
     else if (id.startsWith("x-")) $(`[data-agregar-trabajo="${id.slice(2)}"]`)?.click();
   });

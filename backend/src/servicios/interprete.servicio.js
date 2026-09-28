@@ -6,7 +6,7 @@
  * Si la IA no está, tarda demasiado, falla o no encuentra nada, se usa el intérprete por reglas:
  * la herramienta siempre responde.
  */
-import { interpretarTexto, extraerMedidas } from "../dominio/texto/interprete.js";
+import { interpretarTexto, extraerMedidas, nombraObra } from "../dominio/texto/interprete.js";
 import { interpretarMateriales } from "../dominio/materiales-texto.js";
 import { instruccionesObra, instruccionesMateriales, ESQUEMA_OBRA, ESQUEMA_MATERIALES } from "../ia/instrucciones.js";
 import { verificarObra, verificarMateriales } from "../ia/verificar.js";
@@ -89,6 +89,18 @@ export function crearServicioInterprete({ ia = null } = {}) {
       } catch (e) {
         return { ...reglas(), avisoIA: avisoFallo(e, "Se leyeron con reglas.") };
       }
+    },
+
+    /**
+     * Cuadro rápido del presupuesto: obras y trabajos para sumar al presupuesto, y materiales sueltos para comprar
+     * aparte ("10 bultos de cemento"). Un material escrito dentro de una obra ("un muro en bloque de concreto") no es
+     * una compra aparte.
+     */
+    async interpretarAgregado(texto, obra) {
+      const [o, m] = await Promise.all([this.interpretarObra(texto), this.leerMateriales(texto, obra)]);
+      const materiales = m.materiales.filter(x => x.id && x.cantidad > 0 && !nombraObra(x.texto || ""));
+      return { partes: o.partes, trabajos: o.trabajos, materiales, noSoportado: o.noSoportado,
+        motor: o.motor, avisoIA: o.avisoIA || m.avisoIA || null };
     }
   };
 }

@@ -10,17 +10,41 @@
   .nav .btn { flex: 0 1 auto; min-width: 150px; }
 }
 
-/* Inicio */
-.inicio h1 { font-size: clamp(38px, 9vw, 64px); line-height: 1; font-weight: 600; letter-spacing: -0.035em; }
-.inicio .sub { font-size: clamp(17px, 2.6vw, 19px); margin-top: 18px; }
-.incluye { list-style: none; padding: 0; margin: 36px 0 0; border-top: 1px solid var(--line); }
-.incluye li { padding: 14px 0; border-bottom: 1px solid var(--line); display: flex; gap: 14px; }
-.incluye b { color: var(--accent); font-weight: 600; min-width: 1.2em; }
-@media (min-width: 640px) {
-  .incluye { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; border: 0; }
-  .incluye li { flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); font-size: 15px; }
-  .incluye b { font-size: 22px; }
-}
+/* Inicio: portada con propuesta de valor, ejemplo real, cómo funciona y qué se obtiene */
+.hero { display: grid; gap: 32px; align-items: center; padding-top: 8px; }
+@media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; padding-top: 24px; } }
+.kicker { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.inicio h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.03; font-weight: 600; letter-spacing: -0.035em; }
+.inicio .sub { font-size: clamp(17px, 2.2vw, 19px); margin-top: 18px; }
+.hero-acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.hero-nota { margin-top: 14px; font-size: 14px; color: var(--muted); }
+
+.ejemplo { margin: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: var(--sombra); padding: 22px 22px 18px; }
+.ejemplo.cargando { min-height: 280px; display: grid; place-items: center; color: var(--muted); font-size: 14px; }
+.ejemplo-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); }
+.ejemplo-total { font-size: clamp(30px, 4vw, 40px); font-weight: 600; letter-spacing: -0.03em; margin-top: 6px; }
+.ejemplo-datos { font-size: 14px; color: var(--muted); }
+.barras { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 14px; }
+.barras li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; font-size: 14px; }
+.barras b { font-weight: 600; }
+.barras .barra { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: var(--soft); overflow: hidden; }
+.barras .barra i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.ejemplo-pie { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
+
+.mis-obras { margin-top: 44px; }
+.seccion-inicio { margin-top: 56px; }
+.seccion-inicio > h2 { font-size: clamp(24px, 3vw, 30px); font-weight: 600; }
+.pasos-inicio { display: grid; gap: 14px; margin-top: 20px; }
+@media (min-width: 760px) { .pasos-inicio { grid-template-columns: repeat(3, 1fr); } }
+.funciones { display: grid; gap: 14px; margin-top: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.tarjeta-inicio { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 18px; }
+.tarjeta-inicio .icono { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.tarjeta-inicio .paso-num { display: block; margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--accent); }
+.tarjeta-inicio h3 { font-size: 17px; font-weight: 600; margin-top: 10px; }
+.tarjeta-inicio .paso-num + h3 { margin-top: 2px; }
+.tarjeta-inicio p { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.fuentes-inicio { margin-top: 48px; padding: 16px 20px; border-radius: 16px; background: var(--soft); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.fuentes-inicio b { color: var(--ink); font-weight: 600; }
 
 /* Paso 2: partes de la obra en tarjetas (varias columnas si hay espacio) */
 .elementos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
@@ -233,3 +257,12 @@ table.apu td:first-child { overflow-wrap: normal; word-break: normal; hyphens: a
 .aiu-casilla { cursor: pointer; }
 .aiu-casilla input { width: 18px; height: 18px; margin: 0 8px 0 0; vertical-align: -3px; accent-color: var(--accent); }
 .aiu-casilla small { display: block; margin-left: 26px; color: var(--muted); font-size: 13px; }
+
+/* Cuadro rápido del presupuesto */
+.agregar-rapido { margin-top: 16px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); }
+.agregar-rapido label { display: block; margin-bottom: 8px; }
+.agregar-rapido label small { display: block; color: var(--muted); font-size: 13px; font-weight: 400; }
+.rapido-fila { display: flex; gap: 8px; }
+.rapido-fila input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 15px; background: var(--bg); color: var(--ink); }
+.rapido-fila input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.agregar-rapido .nota { margin-top: 8px; }

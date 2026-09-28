@@ -3,7 +3,7 @@
  */
 import * as api from "../api/cliente.js";
 import { estado, datosDeObra } from "../estado/estado.js";
-import { catalogo, insumo } from "../estado/catalogo.js";
+import { catalogo } from "../estado/catalogo.js";
 import { esc, num, pesos, r2 } from "../utilidades/formato.js";
 import { nombrePorDefecto } from "../vistas/comunes.js";
 
@@ -38,15 +38,15 @@ export function textoPresupuesto() {
     pie(`Administración ${pct("a")}%`, p.admin); pie(`Imprevistos ${pct("i")}%`, p.imprev);
     pie(`Utilidad ${pct("u")}%`, p.util); pie(`IVA ${pct("iva")}% de la utilidad`, p.ivaUtil); pie("Valor total con AIU", p.total);
   }
-  if (p.propios > 0) { pie("Materiales suministrados o ya comprados", -p.propios); pie("Por invertir", p.porInvertir); }
+  if (p.propios > 0) { pie("Suministrado o ya comprado", -p.propios); pie("Por invertir", p.porInvertir); }
   return aTexto(filas);
 }
 
 export function textoCompras() {
-  const filas = [["Material", "Cantidad", "Unidad", "Costo aprox.", "Estado", "Precio"]];
+  const filas = [["Material o ítem", "Cantidad", "Unidad", "Costo aprox.", "Estado", "Precio"]];
+  const precio = c => (c.tipo === "oficial" ? "Lista oficial" : c.tipo === "cotizado" || c.precioPropio ? "Cotización" : "Referencia");
   estado.calculo.compras.forEach(c => {
-    const i = insumo(c.id);
-    filas.push([i.nombre, c.cantidad, i.unidad, Math.round(c.costo), c.comprado ? "Comprado" : "Por comprar", c.precioPropio ? "Cotización" : "Referencia"]);
+    filas.push([c.nombre, c.cantidad, c.unidad, Math.round(c.costo), c.comprado ? "Comprado" : "Por comprar", precio(c)]);
   });
   return aTexto(filas);
 }

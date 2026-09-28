@@ -43,6 +43,7 @@ const obraVacia = () => ({
   extras: [],             // trabajos sueltos: [{ codigo, cantidad, nota? }]
   cotizados: [],          // lo que no está en la base, con el precio de una cotización: [{ id, nombre, unidad, cantidad, precio, fuente }]
   disponibles: {},        // materiales que ya tiene: { idInsumo: cantidad }
+  comprasAdicionales: {}, // materiales que se compran aparte (cuadro rápido del presupuesto): { idInsumo: cantidad }
   anotados: [],           // lo que escribió que tiene: [{ clave, id|null, texto, nota, decision }]
   comprados: [],          // materiales marcados como comprados
   hechas: [],             // actividades marcadas como hechas
@@ -75,6 +76,8 @@ const pantallaVacia = () => ({
   calculo: null,
   lineaAbierta: null,     // ítem del presupuesto con su APU a la vista
   nuevoCotizado: cotizadoVacio(),   // lo que se va escribiendo en "Ítems cotizados"
+  textoRapido: "",        // cuadro rápido del presupuesto: lo que se va escribiendo
+  avisoRapido: "",        // y qué se agregó la última vez
   oficial: { q: "", capitulo: "", resultado: null, capitulos: null, buscando: false }
 });
 
@@ -84,6 +87,7 @@ export const estado = {
   mensaje: "",                // aviso en el inicio ("quedó guardada…")
   error: "",                  // error de conexión o del servidor
   diagnostico: null,
+  ejemploInicio: null,        // presupuesto de ejemplo de la pantalla de inicio (se calcula al abrir)
   ...obraVacia(),
   ...pantallaVacia()
 };

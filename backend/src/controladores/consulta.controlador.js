@@ -18,6 +18,7 @@ export const crearControladorConsulta = interprete => ({
   interpretarDescripcion: async (req, res) => res.json(await interprete.interpretarObra(req.datos.texto)),
   interpretarMedidas: async (req, res) => res.json(await interprete.leerMedidas(req.datos.texto, req.datos.tipo)),
   interpretarMateriales: async (req, res) => res.json(await interprete.leerMateriales(req.datos.texto, req.datos.obra)),
+  interpretarAgregado: async (req, res) => res.json(await interprete.interpretarAgregado(req.datos.texto, req.datos.obra)),
 
   calcular: (req, res) => res.json(calcularObra(req.datos.obra)),
 

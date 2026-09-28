@@ -14,13 +14,16 @@ export const CAPITULOS = [
   { numero: 8, nombre: "Pañetes", codigos: ["PAN-01"] },
   { numero: 9, nombre: "Enchapes, pisos y mesones", codigos: ["IMP-01", "ACB-01", "ACB-02", "MES-01"] },
   { numero: 10, nombre: "Ítems de la lista oficial", codigos: [] },  // los que se agregan desde el catálogo de la Gobernación
-  { numero: 11, nombre: "Ítems cotizados", codigos: [] }             // lo que no está en la base: con el precio de una cotización
+  { numero: 11, nombre: "Ítems cotizados", codigos: [] },            // lo que no está en la base: con el precio de una cotización
+  { numero: 12, nombre: "Materiales adicionales", codigos: [] }      // compras aparte escritas en el cuadro rápido del presupuesto
 ];
 
 /** Código de un ítem cotizado en el presupuesto ("COT-c1"). */
 export const PREFIJO_COTIZADO = "COT-";
-const OFICIALES = CAPITULOS[9], COTIZADOS = CAPITULOS[10];
+/** Código de una compra adicional de material en el presupuesto ("MAT-cem"). */
+export const PREFIJO_ADICIONAL = "MAT-";
+const OFICIALES = CAPITULOS[9], COTIZADOS = CAPITULOS[10], ADICIONALES = CAPITULOS[11];
 
-/** Capítulo de una actividad (los ítems del catálogo oficial y los cotizados van al final). */
-export const capituloDe = codigo =>
-  CAPITULOS.find(c => c.codigos.includes(codigo)) || (String(codigo).startsWith(PREFIJO_COTIZADO) ? COTIZADOS : OFICIALES);
+/** Capítulo de una actividad (los ítems del catálogo oficial, los cotizados y las compras adicionales van al final). */
+export const capituloDe = codigo => CAPITULOS.find(c => c.codigos.includes(codigo))
+  || (String(codigo).startsWith(PREFIJO_COTIZADO) ? COTIZADOS : String(codigo).startsWith(PREFIJO_ADICIONAL) ? ADICIONALES : OFICIALES);

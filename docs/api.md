@@ -94,6 +94,30 @@ Respuesta:
 - El punto separa miles ("1.500" = 1500) y la coma, decimales ("2,5").
 - Si una cantidad no se puede pasar con seguridad a la unidad del insumo (una volqueta, varillas sin calibre), llega `cantidad: null` con una `nota` que pide el dato: nunca se inventa.
 
+### POST `/api/interpretaciones/agregado`
+
+Cuadro "Agregar algo rápido" del presupuesto. Mismo cuerpo que `/interpretaciones/materiales` (`texto` y `obra` opcional). Separa lo que se construye de lo que se compra aparte:
+
+```json
+{ "texto": "pañetar 20 m2 y 10 bultos de cemento", "obra": { "elementos": [{ "tipo": "bano" }] } }
+```
+
+Respuesta:
+
+```json
+{
+  "partes": [],
+  "trabajos": [{ "codigo": "PAN-01", "cantidad": 20 }],
+  "materiales": [{ "texto": "10 bultos de cemento", "id": "cem", "cantidad": 10, "nota": "" }],
+  "noSoportado": [],
+  "motor": "reglas",
+  "avisoIA": null
+}
+```
+
+- `partes` y `trabajos` son como en `/interpretaciones/obra`: se suman al presupuesto y sus materiales salen en Compras.
+- `materiales` son compras aparte: solo los que tienen cantidad. El material nombrado dentro de una obra ("un muro de 3 x 2 en bloque de concreto") no se cuenta como compra aparte.
+
 ## Cálculo
 
 ### POST `/api/calculos`
@@ -106,7 +130,8 @@ Calcula todo a partir de los datos de la obra, sin guardar nada.
     "elementos": [{ "id": "e1", "tipo": "bano", "cantidad": 1, "medidas": { "largo": 2, "ancho": 1.5, "alto": 2.4, "sistema": "arcilla" }, "excluir": ["ACB-01"] }],
     "extras": [{ "codigo": "PAN-01", "cantidad": 20 }],
     "disponibles": { "cem": 10 },
-    "comprados": ["cpa"],
+    "comprados": ["cpa", "GOB-200802"],
+    "comprasAdicionales": { "cem": 10 },
     "hechas": ["CON-05"],
     "reemplazos": {},
     "ejecucion": "contratista",
@@ -123,6 +148,8 @@ Todos los campos de `obra` son opcionales. Lo que no se reconoce se descarta.
 - `elementos[].remodelacion`: `true` si el espacio ya existe; se agregan la demolición del enchape (DEM-01) y del piso (DEM-02) que se cambian.
 - `elementos[].huecos`: puertas y ventanas con su forma, `[{ "tipo": "puerta", "forma": "arco", "ancho": 1, "alto": 2.1, "diametro": null, "cantidad": 1 }]`. `tipo`: `puerta` o `ventana`; `forma`: `rectangular` (ancho × alto), `arco` (de medio punto; `alto` es el alto total) o `circular` (`diametro`). Si hay huecos, su área reemplaza la de las puertas y ventanas típicas (o `medidas.vanos` en un muro) y se descuenta del bloque, el pañete y el enchape. Una medida que falta toma el valor típico y queda en `porDefecto`.
 - `cotizados`: lo que no está en la base ni en la lista oficial, con el precio de una cotización: `[{ "id": "c1", "nombre": "Puerta en arco en madera", "unidad": "und", "cantidad": 1, "precio": 1200000, "fuente": "Carpintería El Roble" }]`. Unidades: und, m, m², m³, gl, kg, día, mes, viaje. Van al capítulo "Ítems cotizados" con el código `COT-<id>` y no se programan en el cronograma. Los que no tienen nombre, cantidad o precio se descartan.
+- `comprasAdicionales`: materiales que se compran aparte (cuadro rápido del presupuesto), `{ idInsumo: cantidad }`. Solo materiales, no mano de obra ni equipo. Van al capítulo "Materiales adicionales" con el código `MAT-<id>`, suman a Compras y no se programan en el cronograma.
+- `comprados`: lo que ya se compró o contrató: ids de materiales, códigos de la lista oficial (`GOB-…`) o de cotizados (`COT-…`). Baja lo que falta por invertir; el total no cambia.
 - `tiempo`: cronómetro para la validación, `{ inicio, fin, ms }` (tiempo activo en milisegundos).
 - `precios`: precio de la cotización por insumo, que reemplaza al de referencia en todos los cálculos.
 - `preciosActividad`: precio cotizado por unidad de una actividad completa, que reemplaza al calculado con el APU.
@@ -136,7 +163,7 @@ Respuesta:
 | `requeridos` | Materiales que necesita la obra |
 | `materiales` | Para cada material: lo que necesita, lo que tiene, lo que falta y la cantidad a comprar |
 | `recomendaciones` | Opinión sobre cada material que la persona tiene: `usa`, `reemplaza` u `otra-actividad` |
-| `compras` | Lista de compras con cantidades, costos y `precioPropio` |
+| `compras` | Lista de compras: `{ id, tipo, nombre, unidad, tienda, cantidad, costo, precioPropio, comprado }`. `tipo` es `material` (lo que falta de cada material), `oficial` (ítem de la lista oficial) o `cotizado`; en estos dos el costo es el de su línea del presupuesto |
 | `precios` | Cada insumo que usa la obra: `precio` en uso, `referencia` y `propio` |
 | `presupuesto` | Costo directo, AIU, IVA, total, valor de los materiales propios y lo que falta por invertir |
 | `cronograma` | `orden` (actividades en el orden en que se construyen), `tramos` (pendientes con inicio y duración), `avance` y `sinProgramar` (ítems oficiales sin rendimiento publicado) |

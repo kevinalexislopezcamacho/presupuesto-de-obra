@@ -39,7 +39,9 @@ function detalleLinea(l) {
         ${c.insumos.map(x => { const ins = insumo(x.id); return `<tr><td>${esc(ins.nombre)}${x.propio ? ` <span class="tag propio">cotización</span>` : ""}</td><td class="n">${coef.format(x.cantidad)} ${esc(unidad(ins.unidad))}</td><td class="n">${pesos.format(x.precio)}</td><td class="n">${pesos.format(x.parcial)}</td></tr>`; }).join("")}
         <tr><td colspan="3">Herramienta menor (5 % de la mano de obra)</td><td class="n">${pesos.format(c.herramienta)}</td></tr>
         <tr class="total-apu"><td colspan="3">Costo unitario (APU)</td><td class="n">${pesos.format(l.unitarioAPU)}</td></tr></tbody></table></div>
-      <p class="nota">Rendimiento: ${num.format(l.rendimiento)} ${u} por día, con una cuadrilla de ${c.cuadrilla.oficiales} oficial y ${num.format(c.cuadrilla.ayudantes)} ${c.cuadrilla.ayudantes === 1 ? "ayudante" : "ayudantes"}.</p>`;
+      ${c.cuadrilla
+    ? `<p class="nota">Rendimiento: ${num.format(l.rendimiento)} ${u} por día, con una cuadrilla de ${c.cuadrilla.oficiales} oficial y ${num.format(c.cuadrilla.ayudantes)} ${c.cuadrilla.ayudantes === 1 ? "ayudante" : "ayudantes"}.</p>`
+    : `<p class="nota">Compra adicional, agregada desde el cuadro rápido: sale en Compras y no se programa en el cronograma. <button class="enlace" data-quitar-adicional="${esc(l.codigo.slice(4))}">Quitar del presupuesto</button></p>`}`;
   const memoria = `<p class="etiqueta" style="margin:12px 0 4px">Memoria de cantidades</p><ul class="memoria">${l.memoria.map(m => `<li>${m.parte ? `<b>${esc(m.parte)}:</b> ` : ""}${esc(m.texto)} = ${num.format(m.cantidad)} ${u}</li>`).join("")}</ul>`;
   const refs = (l.referencias || []).length
     ? `<p class="nota">Referencia oficial: ${l.referencias.map(textoReferencia).join(" · ")}</p>` : "";
@@ -56,6 +58,7 @@ function panelPresupuesto({ lineas, presupuesto: p }) {
     if (l.precioPropio) return `<span class="tag propio">precio cotizado</span>`;
     if (l.composicion.oficial) return `<span class="tag">oficial</span>`;
     if (l.composicion.cotizacion) return `<span class="tag propio">cotización</span>`;
+    if (l.codigo.startsWith("MAT-")) return `<span class="tag">compra adicional</span>`;
     return l.alerta ? `<span class="tag alerta" title="Se aleja más de ${limite()} % de la referencia oficial equivalente: ver el APU o la pestaña Precios">${pct(l.alerta.diferencia)} vs. oficial</span>` : "";
   };
   const linea = l => {
@@ -75,7 +78,7 @@ function panelPresupuesto({ lineas, presupuesto: p }) {
       <label class="fila aiu-casilla"><span><input type="checkbox" id="con-aiu" data-con-aiu="1" ${conAIU ? "checked" : ""}> Sumar AIU <small>si la obra la ejecuta un contratista: administración, imprevistos y utilidad</small></span></label>
       ${conAIU ? `${porcentaje("a", "Administración", p.admin)}${porcentaje("i", "Imprevistos", p.imprev)}${porcentaje("u", "Utilidad", p.util)}${porcentaje("iva", "IVA", p.ivaUtil, " de la utilidad")}
         <div class="fila fuerte"><span>Valor total con AIU</span><span>${pesos.format(p.total)}</span></div>` : ""}
-      ${p.propios > 0 ? `<div class="fila"><span>Materiales suministrados o ya comprados</span><span>− ${pesos.format(p.propios)}</span></div>
+      ${p.propios > 0 ? `<div class="fila"><span>Suministrado o ya comprado</span><span>− ${pesos.format(p.propios)}</span></div>
         <div class="fila fuerte"><span>Por invertir</span><span>${pesos.format(p.porInvertir)}</span></div>` : ""}
     </div>
     <p class="nota">${conAIU
@@ -141,21 +144,27 @@ function panelCronograma({ lineas, cronograma }) {
           }).join("")}`;
       }).join("")}
     </div>
-    ${sinProgramar.length ? `<p class="nota">No se programan (no tienen rendimiento publicado: ítems de la lista oficial y cotizados): ${sinProgramar.map(l => esc(l.nombre)).join(" · ")}.</p>` : ""}
+    ${sinProgramar.length ? `<p class="nota">No se programan (no tienen rendimiento publicado: ítems de la lista oficial, cotizados y compras adicionales): ${sinProgramar.map(l => esc(l.nombre)).join(" · ")}.</p>` : ""}
     <p class="nota">Cada actividad la hace una cuadrilla de un oficial con uno o dos ayudantes (según la actividad), en jornadas de 8 horas, una actividad tras otra y en el orden en que se construye. No descuenta festivos ni días de lluvia. La duración sale del rendimiento: cuánto hace la cuadrilla en un día; en los ítems con precio oficial el rendimiento es de referencia.</p>`;
 }
 
 /* ---------- Compras ---------- */
+const ORIGEN_COMPRA = { oficial: "lista oficial", cotizado: "cotización" };
+
 function panelCompras({ compras }) {
   const porComprar = compras.filter(c => !c.comprado);
+  const fila = c => {
+    const donde = c.comprado ? "✓ Comprado"
+      : c.tipo === "material" ? `<a href="${mapsBuscar(`${c.tienda} Cali`)}" target="_blank" rel="noopener">dónde comprar</a>`
+        : c.tipo === "oficial" ? "precio oficial de la Gobernación" : "según la cotización";
+    const etiqueta = ORIGEN_COMPRA[c.tipo] ? ` <span class="tag${c.tipo === "cotizado" ? " propio" : ""}">${ORIGEN_COMPRA[c.tipo]}</span>` : "";
+    return `<div class="fila${c.comprado ? " hecha" : ""}"><label class="nom tarea"><input type="checkbox" id="cp-${esc(c.id)}" data-comprado="${esc(c.id)}" ${c.comprado ? "checked" : ""} aria-label="Ya compré ${esc(c.nombre)}">
+      <span>${esc(c.nombre)}${etiqueta}<small>${num.format(c.cantidad)} ${esc(c.unidad)} · ${donde}</small></span></label><span class="val">${pesos.format(c.costo)}${c.precioPropio ? `<small class="tag propio">cotizado</small>` : ""}</span></div>`;
+  };
   const lista = compras.length
-    ? `<p class="nota" style="margin-top:14px">Marque lo que ya se compró: se descuenta de lo que falta por invertir.</p>
-      <div class="filas">${compras.map(c => {
-        const ins = insumo(c.id);
-        return `<div class="fila${c.comprado ? " hecha" : ""}"><label class="nom tarea"><input type="checkbox" id="cp-${c.id}" data-comprado="${c.id}" ${c.comprado ? "checked" : ""} aria-label="Ya compré ${esc(ins.nombre)}">
-          <span>${esc(ins.nombre)}<small>${num.format(c.cantidad)} ${ins.unidad} · ${c.comprado ? "✓ Comprado" : `<a href="${mapsBuscar(`${ins.tienda} Cali`)}" target="_blank" rel="noopener">dónde comprar</a>`}</small></span></label><span class="val">${pesos.format(c.costo)}${c.precioPropio ? `<small class="tag propio">cotizado</small>` : ""}</span></div>`;
-      }).join("")}</div>
-      <div class="suma"><div class="fila fuerte"><span>${porComprar.length < compras.length ? "Falta por comprar" : "Total en materiales"}</span><span>${pesos.format(porComprar.reduce((s, c) => s + c.costo, 0))}</span></div></div>
+    ? `<p class="nota" style="margin-top:14px">Marque lo que ya se compró o contrató: se descuenta de lo que falta por invertir.</p>
+      <div class="filas">${compras.map(fila).join("")}</div>
+      <div class="suma"><div class="fila fuerte"><span>${porComprar.length < compras.length ? "Falta por comprar" : "Total por comprar"}</span><span>${pesos.format(porComprar.reduce((s, c) => s + c.costo, 0))}</span></div></div>
       <div class="acciones"><button class="btn sec chico" data-accion="copiar-compras">Copiar lista</button></div>`
     : `<p class="aviso">Los materiales disponibles alcanzan: no hay que comprar nada.</p>`;
   return lista + tiendasDeCali();
@@ -212,10 +221,20 @@ function panelPrecios({ precios, lineas }) {
     <div class="filas">${precios.map(filaInsumo).join("")}</div>
     <h3 class="subtitulo">Precio por actividad <small>(opcional)</small></h3>
     <p class="nota">Si se cotizó una actividad completa (materiales y mano de obra), escríbala aquí: reemplaza el cálculo de esa actividad en el presupuesto. Se compara con los precios oficiales de la Gobernación del Valle, la Alcaldía de Cali y EMCALI.</p>
-    <div class="filas">${lineas.filter(l => !l.composicion.cotizacion).map(filaActividad).join("")}</div>`;
+    <div class="filas">${lineas.filter(l => !l.composicion.cotizacion && !l.codigo.startsWith("MAT-")).map(filaActividad).join("")}</div>`;
 }
 
 /* ---------- Pantalla ---------- */
+/** Cuadro para agregar algo rápido sin volver a los pasos: obras y trabajos al presupuesto, materiales a Compras. */
+function agregarRapido() {
+  return `<div class="agregar-rapido">
+    <label for="rapido"><strong>Agregar algo rápido</strong><small>Una obra, un trabajo o materiales para comprar</small></label>
+    <div class="rapido-fila"><input id="rapido" type="text" maxlength="500" value="${esc(estado.textoRapido)}" placeholder="Ej.: pañetar 20 m², un muro de 3 x 2, 10 bultos de cemento" ${estado.ocupado ? "disabled" : ""}>
+      <button class="btn chico" data-accion="agregar-rapido" ${estado.ocupado ? "disabled" : ""}>${estado.ocupado ? "Agregando…" : "Agregar"}</button></div>
+    ${estado.avisoRapido ? `<p class="nota" role="status">${esc(estado.avisoRapido)}</p>` : ""}
+  </div>`;
+}
+
 /** El total si las actividades que se alejan de su referencia oficial equivalente costaran lo oficial. */
 function rango({ presupuesto: p }) {
   if (!p.rango) return "";
@@ -269,6 +288,7 @@ export function pantallaResultado() {
         <span>${avance.hecho ? `Faltan <b>${num.format(avance.falta)} días</b> · ${Math.round(avance.pct * 100)} % hecho` : `Duración <b>${num.format(avance.total)} días hábiles</b>`}${fin ? ` · termina ${fin}` : " · obra terminada"}</span>
         <span>${estado.ejecucion === "contratista" ? "<b>Con AIU</b> (la ejecuta un contratista)" : "<b>Costo directo</b>, sin AIU"} · <button class="enlace" data-accion="alternar-aiu">${estado.ejecucion === "contratista" ? "quitar AIU" : "sumar AIU"}</button></span>
         <span>${propios ? `<b>${propios}</b> ${propios === 1 ? "precio cotizado" : "precios cotizados"}, el resto de referencia` : "Precios de referencia"} · <button class="enlace" data-tab="precios">registrar cotizaciones</button></span></div></div>
+      ${agregarRapido()}
       ${rango(calculo)}
       ${avisos(calculo)}
     </section>

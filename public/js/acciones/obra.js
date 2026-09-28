@@ -3,7 +3,7 @@
  * No calculan nada: después de cada cambio se le pide el cálculo al backend.
  */
 import * as api from "../api/cliente.js";
-import { catalogo } from "../estado/catalogo.js";
+import { catalogo, insumo, nombreCantidad, nombreCortoApu, unidadApu } from "../estado/catalogo.js";
 import { estado, nuevoElemento, nuevaClave, datosDeObra, cotizadoVacio, nuevoIdCotizado } from "../estado/estado.js";
 import { r2 } from "../utilidades/formato.js";
 
@@ -216,4 +216,37 @@ export function agregarCotizado() {
 export function cambiarCotizado(id, campo, valor) {
   const x = estado.cotizados.find(c => c.id === id), v = parseFloat(valor);
   if (x && v > 0) x[campo] = campo === "precio" ? Math.round(v) : r2(v);
+}
+
+/* ---------- Cuadro rápido del presupuesto ---------- */
+/**
+ * Lo que se escribe en el presupuesto ya armado: obras y trabajos se suman al presupuesto (sus materiales salen en
+ * Compras) y los materiales sueltos ("10 bultos de cemento") van a Compras como compra adicional, con su costo.
+ */
+export async function agregarRapido() {
+  const texto = estado.textoRapido.trim();
+  if (!texto) { estado.avisoRapido = "Escriba qué quiere agregar."; return; }
+  const r = await api.interpretarAgregado(texto, datosDeObra());
+  const hecho = [], pendiente = [];
+  for (const p of r.partes) {
+    estado.elementos.push(nuevoElemento(p.tipo, { ...p.medidas, ...(p.sistema ? { sistema: p.sistema } : {}) }, p.cantidad,
+      p.estimadas, p.excluir || [], p.remodelacion === true, p.huecos || []));
+    hecho.push(nombreCantidad(p.tipo, p.cantidad));
+  }
+  for (const t of r.trabajos) {
+    if (t.cantidad > 0) { agregarTrabajo(t.codigo, t.cantidad); hecho.push(`${nombreCortoApu(t.codigo)} (${r2(t.cantidad)} ${unidadApu(t.codigo)})`); }
+    else pendiente.push(`${nombreCortoApu(t.codigo)}: falta la cantidad`);
+  }
+  // "10 bultos", pero "2 kg" o "3 m³": solo las unidades que son palabras llevan plural.
+  const unidad = (u, n) => n !== 1 && /^[a-záéíóúñ]{4,}$/.test(u) ? `${u}s` : u;
+  for (const m of r.materiales) {
+    estado.comprasAdicionales[m.id] = r2((estado.comprasAdicionales[m.id] || 0) + m.cantidad);
+    hecho.push(`${r2(m.cantidad)} ${unidad(insumo(m.id).unidad, m.cantidad)} de ${insumo(m.id).nombre.toLowerCase()} (a Compras)`);
+  }
+  if (r.noSoportado.length) pendiente.push(`no se calcula: ${r.noSoportado.map(x => x.replace(/ \(.*\)/, "")).join(", ")}`);
+  estado.avisoRapido = hecho.length
+    ? `Se agregó: ${hecho.join(" · ")}.${pendiente.length ? ` (${pendiente.join("; ")})` : ""}`
+    : pendiente.length ? `No se agregó nada: ${pendiente.join("; ")}.`
+      : "No se entendió qué agregar. Escríbalo de otra forma, por ejemplo «pañetar 20 m²» o «10 bultos de cemento».";
+  if (hecho.length) estado.textoRapido = "";
 }

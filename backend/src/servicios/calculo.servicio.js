@@ -15,7 +15,7 @@ import {
 } from "../dominio/materiales.js";
 import { calcularPresupuesto, aiuEfectivo } from "../dominio/presupuesto.js";
 import { FASES, faseDe, ordenFase, calcularCronograma, avanceObra } from "../dominio/cronograma.js";
-import { capituloDe, PREFIJO_COTIZADO } from "../datos/capitulos.js";
+import { capituloDe, PREFIJO_COTIZADO, PREFIJO_ADICIONAL } from "../datos/capitulos.js";
 import { areaHueco, areaHuecos, revisarHuecos } from "../dominio/huecos.js";
 import { NOMBRES_TIPO } from "../datos/tipos-obra.js";
 import { limpiarObra } from "./obra-entrada.js";
@@ -34,7 +34,7 @@ function composicionDe(apu, insumos) {
   return {
     insumos: a.lineas.map(x => ({ id: x.id, cantidad: x.cantidad, precio: x.precio, parcial: x.parcial, propio: Boolean(insumos[x.id].propio) })),
     herramienta: a.herramienta,
-    cuadrilla: apu.insumos.length ? cuadrilla(apu) : null,
+    cuadrilla: apu.insumos.length && apu.rendimiento ? cuadrilla(apu) : null,
     oficial: apu.oficial || null,         // precio oficial sin composición publicada
     cotizacion: apu.cotizacion || null    // ítem cotizado: { precio, fuente }
   };
@@ -73,6 +73,12 @@ const actividadCotizada = x => ({
   rendimiento: null, insumos: [], cotizacion: { precio: x.precio, fuente: x.fuente }
 });
 
+/** Un material comprado aparte como actividad del presupuesto: su APU es el material mismo (1 unidad por unidad). */
+const actividadAdicional = id => ({
+  codigo: PREFIJO_ADICIONAL + id, corto: INSUMOS[id].nombre, nombre: `${INSUMOS[id].nombre} (compra adicional)`,
+  categoria: "Materiales adicionales", unidad: INSUMOS[id].unidad, rendimiento: null, insumos: [[id, 1]]
+});
+
 /** Validación de las medidas de una parte, con la de sus puertas y ventanas. */
 function validarParte(el) {
   const v = validarMedidas(el.tipo, el.medidas), h = revisarHuecos(el.huecos);
@@ -96,11 +102,13 @@ function actividadesDe(obra, insumos) {
     [{ parte: x.codigo.startsWith(PREFIJO_OFICIAL) ? "Ítem de la lista oficial" : "Trabajo suelto", texto: "cantidad escrita", cantidad: x.cantidad }]]);
   const cotizados = obra.cotizados.map(x => [PREFIJO_COTIZADO + x.id, x.cantidad,
     [{ parte: "Ítem cotizado", texto: `cantidad escrita${x.fuente ? `; cotización: ${x.fuente}` : ""}`, cantidad: x.cantidad }]]);
-  // Base de APU con los materiales cambiados, más los ítems de la lista oficial y los cotizados que se agregaron.
+  const adicionales = Object.entries(obra.comprasAdicionales).map(([id, cantidad]) => [PREFIJO_ADICIONAL + id, cantidad,
+    [{ parte: "Compra adicional", texto: "cantidad escrita", cantidad }]]);
+  // Base de APU con los materiales cambiados, más los ítems de la lista oficial, los cotizados y las compras adicionales.
   const apus = [...APU.map(a => aplicarReemplazos(a, obra.reemplazos)),
     ...obra.extras.filter(x => x.codigo.startsWith(PREFIJO_OFICIAL)).map(x => actividadOficial(x.codigo)).filter(Boolean),
-    ...obra.cotizados.map(actividadCotizada)];
-  const lineas = unirLineas([...generadas, ...sueltos, ...cotizados]).map(l => {
+    ...obra.cotizados.map(actividadCotizada), ...Object.keys(obra.comprasAdicionales).map(actividadAdicional)];
+  const lineas = unirLineas([...generadas, ...sueltos, ...cotizados, ...adicionales]).map(l => {
     const apu = apus.find(a => a.codigo === l.codigo);
     const unitarioAPU = analizarAPU(apu, insumos).unitario, cotizado = obra.preciosActividad[l.codigo];
     return { ...l, apu, rendimiento: apu.rendimiento, unitarioAPU, unitario: cotizado ?? unitarioAPU, precioPropio: cotizado !== undefined };
@@ -162,17 +170,27 @@ export function calcularObra(entrada) {
     total: calcularPresupuesto(lineas.map(l => (alertas.has(l.codigo) ? { ...l, unitario: alertas.get(l.codigo).precio } : l)), aiu).total,
     actividades: [...alertas.keys()]
   } : null;
-  const propios = valorMaterialesPropios(conComprados.items, insumos);
-
   // Cronograma: en el orden en que se construye. Los ítems de la lista oficial y los cotizados no traen rendimiento: no se programan.
   const porFase = lineas.filter(l => l.rendimiento > 0).sort(ordenFase);
   const pendientes = porFase.filter(l => !obra.hechas.includes(l.codigo));
   const tramos = calcularCronograma(pendientes).map(t => ({ codigo: t.codigo, inicio: t.inicio, dias: t.dias }));
 
-  const compras = conLoQueTiene.items.filter(i => i.falta > 1e-9).map(i => {
-    const ins = insumos[i.id], cantidad = cantidadCompra(i.falta, ins.unidad);
-    return { id: i.id, cantidad, costo: cantidad * precioInsumo(ins), precioPropio: Boolean(ins.propio), comprado: obra.comprados.includes(i.id) };
-  });
+  // Compras: los materiales que faltan y, además, los ítems de la lista oficial y los cotizados, que se compran
+  // o contratan aparte (su costo es el de la línea del presupuesto).
+  const compras = [
+    ...conLoQueTiene.items.filter(i => i.falta > 1e-9).map(i => {
+      const ins = insumos[i.id], cantidad = cantidadCompra(i.falta, ins.unidad);
+      return { id: i.id, tipo: "material", nombre: ins.nombre, unidad: ins.unidad, tienda: ins.tienda || "", cantidad,
+        costo: cantidad * precioInsumo(ins), precioPropio: Boolean(ins.propio), comprado: obra.comprados.includes(i.id) };
+    }),
+    ...lineas.filter(l => l.codigo.startsWith(PREFIJO_OFICIAL) || l.codigo.startsWith(PREFIJO_COTIZADO)).map(l => ({
+      id: l.codigo, tipo: l.codigo.startsWith(PREFIJO_OFICIAL) ? "oficial" : "cotizado", nombre: l.apu.nombre, unidad: l.apu.unidad, tienda: "",
+      cantidad: l.cantidad, costo: l.cantidad * l.unitario, precioPropio: l.precioPropio, comprado: obra.comprados.includes(l.codigo)
+    }))
+  ];
+  // Lo que ya está pagado o suministrado: materiales disponibles o comprados, e ítems marcados como comprados.
+  const propios = valorMaterialesPropios(conComprados.items, insumos)
+    + compras.filter(c => c.tipo !== "material" && c.comprado).reduce((s, c) => s + c.costo, 0);
 
   // Opinión sobre cada material que la persona dijo tener.
   const suyos = new Set([...Object.keys(obra.disponibles), ...obra.anotados.map(a => a.id).filter(Boolean)]);

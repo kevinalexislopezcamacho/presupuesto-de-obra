@@ -10,6 +10,7 @@ import { limpiarHuecos } from "../dominio/huecos.js";
 import { TIPOS_OBRA } from "../datos/tipos-obra.js";
 import { esObjeto } from "../utilidades/valores.js";
 import { itemOficial, PREFIJO_OFICIAL } from "./listas-oficiales.servicio.js";
+import { PREFIJO_COTIZADO } from "../datos/capitulos.js";
 
 const CODIGOS_APU = new Set(APU.map(a => a.codigo));
 // Una actividad válida: de la base de APU o un ítem de la lista oficial agregado al presupuesto ("GOB-100113").
@@ -85,6 +86,10 @@ function limpiarCantidades(obj) {
  */
 export function limpiarObra(entrada = {}) {
   const o = esObjeto(entrada) ? entrada : {};
+  const cotizados = limpiarCotizados(o.cotizados);
+  // Lo que se marca como comprado: materiales, ítems de la lista oficial ("GOB-…") y cotizados ("COT-…").
+  const comprable = id => Boolean(INSUMOS[id]) || (typeof id === "string" && id.startsWith(PREFIJO_OFICIAL) && Boolean(itemOficial(id)))
+    || cotizados.some(x => PREFIJO_COTIZADO + x.id === id);
   const aiu = esObjeto(o.aiu) ? o.aiu : {};
   const pct = (k) => Math.min(1, Math.max(0, numero(aiu[k], AIU_CALI_2026[k])));
   const reemplazos = {};
@@ -95,13 +100,15 @@ export function limpiarObra(entrada = {}) {
     extras: lista(o.extras)
       .filter(x => esObjeto(x) && esActividad(x.codigo))
       .map(x => ({ codigo: x.codigo, cantidad: Math.max(0, numero(x.cantidad)), ...(x.nota ? { nota: texto(x.nota, 600) } : {}) })),
-    cotizados: limpiarCotizados(o.cotizados),
+    cotizados,
     disponibles: limpiarCantidades(o.disponibles),
+    // Materiales que se compran aparte (cuadro rápido del presupuesto): { idInsumo: cantidad }.
+    comprasAdicionales: Object.fromEntries(Object.entries(limpiarCantidades(o.comprasAdicionales)).filter(([id]) => INSUMOS[id].tipo === "material")),
     anotados: lista(o.anotados).filter(esObjeto).map(a => ({
       clave: texto(a.clave, 60), id: INSUMOS[a.id] ? a.id : null, texto: texto(a.texto, 200), nota: texto(a.nota, 400),
       decision: a.decision === "aparte" ? "aparte" : null
     })),
-    comprados: lista(o.comprados).filter(id => INSUMOS[id]),
+    comprados: lista(o.comprados).filter(comprable),
     hechas: lista(o.hechas).filter(esActividad),
     reemplazos,
     cambiosMat: lista(o.cambiosMat).filter(c => esObjeto(c) && INSUMOS[c.de] && INSUMOS[c.a]).map(c => ({

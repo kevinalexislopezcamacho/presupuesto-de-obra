@@ -9,6 +9,7 @@ import { cargarHistorial } from "./estado/historial.js";
 import { registrarEventos } from "./eventos.js";
 import { render, recalcular, USAN_CALCULO } from "./render.js";
 import { esc } from "./utilidades/formato.js";
+import { EJEMPLO_INICIO } from "./vistas/inicio.js";
 import { aplicarTema } from "./utilidades/tema.js";
 import { iniciarCronometro } from "./utilidades/cronometro.js";
 
@@ -44,7 +45,9 @@ async function iniciar() {
   escribirPie();
   render();
 
-  const tareas = [cargarHistorial().catch(e => { estado.error = e.message; }), cargarDiagnostico().then(render)];
+  const tareas = [cargarHistorial().catch(e => { estado.error = e.message; }), cargarDiagnostico().then(render),
+    // El ejemplo de la portada se calcula con los precios vigentes; si falla, la portada se ve sin él.
+    api.calcular(EJEMPLO_INICIO).then(c => { estado.ejemploInicio = c; }).catch(() => {})];
   if (USAN_CALCULO.includes(estado.pantalla)) tareas.push(recalcular());
   await Promise.all(tareas);
   render();
