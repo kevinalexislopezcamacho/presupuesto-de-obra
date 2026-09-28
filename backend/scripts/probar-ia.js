@@ -14,7 +14,7 @@ const CLAVE_AI_STUDIO = "https://aistudio.google.com/apikey";
 async function diagnosticar() {
   const ia = crearClienteGemini(config.ia);
   if (!ia) {
-    console.log(`No hay GEMINI_API_KEY. Crea backend/.env (copia .env.example) y pon tu clave de ${CLAVE_AI_STUDIO}`);
+    console.log(`No hay GEMINI_API_KEY. Cree backend/.env (copie .env.example) y ponga su clave de ${CLAVE_AI_STUDIO}`);
     return 1;
   }
 
@@ -40,7 +40,7 @@ async function diagnosticar() {
   console.log(`\n2) ¿Responde cada modelo en ${via}?`);
   for (const r of modelos) console.log(linea(r));
   if (!modelos.some(r => r.ok)) {
-    console.log("\nNingún modelo respondió ahora (saturados, sin cuota o sin conexión). Intenta en unos minutos o cambia GEMINI_MODELO / GEMINI_MODELOS_RESPALDO en backend/.env.");
+    console.log("\nNingún modelo respondió ahora (saturados, sin cuota o sin conexión). Intente en unos minutos o cambie GEMINI_MODELO / GEMINI_MODELOS_RESPALDO en backend/.env.");
     return 1;
   }
 

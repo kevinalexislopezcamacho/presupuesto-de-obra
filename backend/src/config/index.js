@@ -22,7 +22,7 @@ export const config = Object.freeze({
     clave: (process.env.GEMINI_API_KEY || "").trim(),
     modelo: process.env.GEMINI_MODELO || "gemini-3.5-flash-lite",
     // Si el modelo principal está saturado o sin cuota, se prueban estos en orden.
-    respaldo: (process.env.GEMINI_MODELOS_RESPALDO ?? "gemini-3.8-flash,gemini-3.5-flash").split(",").map(s => s.trim()).filter(Boolean),
+    respaldo: (process.env.GEMINI_MODELOS_RESPALDO ?? "gemini-3.8-flash,gemini-3.5-flash,gemini-3.6-flash").split(",").map(s => s.trim()).filter(Boolean),
     // "auto" prueba AI Studio (gratis, sin facturación) y después Vertex AI; también "aistudio" o "vertex".
     proveedor: process.env.GEMINI_PROVEEDOR || "auto",
     tiempoMaximoMs: Number(process.env.IA_TIEMPO_MAXIMO_MS || 25000)

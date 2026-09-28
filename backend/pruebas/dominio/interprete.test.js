@@ -65,6 +65,17 @@ test("texto: lo que no se calcula no se inventa", () => {
   assert.equal(r.noSoportado.length, 2);
 });
 
+test("texto: obras exteriores que no se calculan (kiosko, pérgola, piscina…) no se confunden con un muro", () => {
+  for (const frase of ["hacer un kiosko en el patio de 4 x 4", "una pérgola de 3 x 4", "quiero construir una piscina", "cancha de microfútbol"]) {
+    const r = interpretarTexto(frase);
+    assert.equal(r.partes.length + r.trabajos.length, 0, frase);
+    assert.equal(r.noSoportado.length, 1, frase);
+  }
+  const casa = interpretarTexto("casa de 9 x 7 con BBQ y jacuzzi");          // la casa sí, y avisa lo demás
+  assert.deepEqual([casa.partes[0].tipo, casa.noSoportado.length], ["casa", 2]);
+  assert.equal(interpretarTexto("un garaje de 3 x 5").partes[0].tipo, "cuarto"); // un garaje sin cubierta especial sigue siendo un cuarto
+});
+
 test("texto: “sin …” quita esa actividad en vez de agregarla", () => {
   const r = interpretarTexto("un baño de 2 x 1,5 sin enchape");
   assert.deepEqual(r.partes[0].excluir, ["ACB-01"]);

@@ -51,5 +51,9 @@ export const NO_SOPORTADO = [
   [/\b(techo|techos|cubierta|tejas?|tejado)\b/, "techos o cubiertas"], [/\b(escaleras?)\b/, "escaleras"],
   [/\b(piscinas?)\b/, "piscinas"], [/\b(pintur\w*|pintar)\b/, "pintura"], [/\b(electric\w*|tomacorrientes?|cableado)\b/, "instalaciones eléctricas"],
   [/\b(dos pisos|2 pisos|dos plantas|tres pisos|3 pisos|segundo piso|segunda planta|tercer piso|otro piso|otra planta|planta alta|entrepiso|placa aerea|mezzanine|altillo)\b/, "más de un piso (se calcula uno solo)"],
-  [/\b(cielo raso|cielorraso|drywall|superboard)\b/, "cielo raso o drywall"], [/\b(ventanas? nuevas?|puertas? nuevas?|carpinteria)\b/, "puertas, ventanas y carpintería"]
+  [/\b(cielo raso|cielorraso|drywall|superboard)\b/, "cielo raso o drywall"], [/\b(ventanas? nuevas?|puertas? nuevas?|carpinteria)\b/, "puertas, ventanas y carpintería"],
+  // Obras exteriores que no son muros ni placas: sin esto, "un kiosko en el patio" se entendería como un muro.
+  [/\b(kioscos?|kioskos?|quioscos?|pergolas?|marquesinas?|enramadas?|ramadas?|(?:parqueaderos?|garajes?|cocheras?) cubiert[oa]s?)\b/, "kioscos, pérgolas y marquesinas (llevan cubierta)"],
+  [/\b(jacuzzis?|hidromasajes?|saunas?|turcos?)\b/, "jacuzzis, saunas y turcos"],
+  [/\b(bbq|asador(?:es)?|barbacoas?)\b/, "asadores y BBQ"], [/\b(canchas?)\b/, "canchas deportivas"]
 ];
