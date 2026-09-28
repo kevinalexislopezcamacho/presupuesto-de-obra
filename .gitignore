@@ -7,8 +7,7 @@ backend/almacenamiento/
 # Configuración local
 .env
 
-# Publicación en Vercel: public/ se genera al publicar (copia de frontend/)
-/public/
+# Publicación en Vercel
 .vercel/
 
 # Sistema operativo y editores

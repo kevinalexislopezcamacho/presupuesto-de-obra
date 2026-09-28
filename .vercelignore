@@ -3,5 +3,4 @@
 backend/.env
 **/node_modules
 backend/almacenamiento
-public
 .vercel

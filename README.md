@@ -49,29 +49,6 @@ La clave queda en el servidor y nunca llega al navegador. **No subas el archivo 
 
 La configuración (puerto, archivo de obras, CORS, IA) está en `backend/.env.example`.
 
-### Publicar en Vercel
-
-La raíz del proyecto ya está preparada: `index.js` exporta la API del backend y, al publicar, Vercel ejecuta `npm run vercel-build`, que copia `frontend/` a `public/` (Vercel entrega la página desde esa carpeta; no usa `express.static`). En el computador se sigue trabajando dentro de `backend/` con `npm start`.
-
-**Desde GitHub:**
-
-1. Suba el proyecto a un repositorio. El archivo `backend/.env`, con la clave, no se sube: está en `.gitignore`.
-2. En [vercel.com](https://vercel.com) → *Add New* → *Project* → importe el repositorio. Deje *Root Directory* en la raíz del proyecto; Vercel detecta Express.
-3. En *Environment Variables* agregue `GEMINI_API_KEY` con su clave (y, si quiere, las demás de `backend/.env.example`).
-4. *Deploy*. En el registro de la publicación debe aparecer "Página copiada a public/". Si no aparece, en *Settings* → *Build and Deployment* ponga como *Build Command* `npm run vercel-build` y vuelva a publicar.
-
-**Desde la terminal** (en la raíz del proyecto):
-
-```bash
-npm i -g vercel
-vercel login
-vercel                       # la primera vez pregunta el nombre del proyecto
-vercel env add GEMINI_API_KEY
-vercel --prod
-```
-
-`.vercelignore` evita que se suban `backend/.env`, `node_modules` y las obras guardadas en el servidor. Publicada, "Mis obras" se guarda en el navegador de cada persona; la API `/api/obras` no sirve en Vercel porque no tiene disco permanente.
-
 ## Estructura
 
 ```
@@ -99,7 +76,7 @@ presupuesto-obra-cali/
 │   ├── scripts/                  generar-docs.js, probar-ia.js, evaluar-ia.js y listas-oficiales/ (transcripción del PDF oficial)
 │   ├── .env.example              Variables de entorno disponibles
 │   └── package.json
-├── frontend/                     Interfaz (HTML + CSS + JavaScript con módulos)
+├── public/                       Interfaz (HTML + CSS + JavaScript con módulos); se llama así porque Vercel publica esa carpeta
 │   ├── index.html
 │   ├── css/                      base.css · componentes.css · pantallas.css
 │   └── js/

@@ -48,9 +48,9 @@ El backend está organizado en capas. Cada capa solo usa las que están debajo d
 - **Ítems cotizados.** Lo que no está en la base ni en la lista oficial entra con el precio de una cotización y su fuente. No se inventa un APU: el costo es el cotizado y queda marcado así en pantalla, en el PDF y en el Excel.
 - **El repositorio no se bloquea.** Si una escritura del archivo de obras falla, se deshace el cambio en memoria y las siguientes escrituras se intentan normalmente.
 - **Express 5.** Los errores de los controladores asíncronos llegan solos al manejador central de errores.
-- **Publicación en Vercel.** `index.js` (en la raíz) exporta la aplicación que arma `crearApp`, sin archivos estáticos; `backend/scripts/publicar-frontend.js` copia `frontend/` a `public/`, que entrega la red de Vercel. El mismo código corre en el computador con `npm start` desde `backend/`.
+- **Publicación en Vercel.** `index.js` (en la raíz) exporta la aplicación que arma `crearApp`, sin archivos estáticos; la página está en `public/`, la carpeta que entrega la red de Vercel. El mismo código corre en el computador con `npm start` desde `backend/`, que entrega esa misma carpeta.
 
-## Frontend (`frontend/`)
+## Frontend (`public/`)
 
 | Carpeta o archivo | Responsabilidad |
 |---|---|
