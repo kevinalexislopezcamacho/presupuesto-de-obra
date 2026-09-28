@@ -37,13 +37,15 @@ export const quitarMiles = s => String(s).replace(RE_MILES, (_, a, b) => a + b.r
 const SEPARADORES = /\s*(?:(?<!\d),|,(?!\d)|;|\n+|\s+(?:y|e|además|ademas|también|tambien|más|mas)\s+)\s*/i;
 const RELLENO = /\b(tengo|tenemos|me quedaron|me sobraron|sobraron|hay|compre|ya|unos|unas|como|mas o menos|aproximadamente|aprox)\b/g;
 const RE_CANT = new RegExp(`(?<![\\d/.])(\\d+(?:\\.\\d+)?)(?![\\d/])|\\b(${RE_NUM_PAL}|media|medio)\\b`);
+const numeroDe = m => m[1] ? parseFloat(m[1]) : (m[2] === "media" || m[2] === "medio" ? 0.5 : NUM_PALABRAS[m[2]]);
+const trozoLimpio = texto => limpiarTexto(quitarMiles(texto)).replace(RELLENO, " ").replace(/\s+/g, " ").trim();
 
 // Devuelve [{ texto, id|null, cantidad|null, nota }]; req (lo que usa la obra) ayuda a decidir entre materiales parecidos.
 export function interpretarMateriales(texto, req = {}) {
   // Se separa sobre el texto original para mostrar cada material tal como se escribió.
   const originales = String(texto).split(SEPARADORES).map(s => s.trim()).filter(Boolean);
   return originales.map(original => {
-    const trozo = limpiarTexto(quitarMiles(original)).replace(RELLENO, " ").replace(/\s+/g, " ").trim();
+    const trozo = trozoLimpio(original);
     return trozo ? leerTrozo(original, trozo, req) : null;
   }).filter(Boolean);
 }
@@ -52,7 +54,7 @@ function leerTrozo(original, trozo, req) {
   let cantidad = null, unidad = null, palabra = "", resto = trozo;
   const m = trozo.match(RE_CANT);
   if (m) {
-    cantidad = m[1] ? parseFloat(m[1]) : (m[2] === "media" || m[2] === "medio" ? 0.5 : NUM_PALABRAS[m[2]]);
+    cantidad = numeroDe(m);
     const despues = trozo.slice(m.index + m[0].length).trim();
     const un = UNIDADES_TEXTO.find(x => x.inicio.test(despues));
     if (un) { unidad = un.u; palabra = despues.match(un.inicio)[0]; }
@@ -86,13 +88,22 @@ function leerTrozo(original, trozo, req) {
  * @returns {{ unidad: string, palabra: string } | null}
  */
 export function unidadEscrita(texto) {
-  const t = limpiarTexto(quitarMiles(texto)).replace(RELLENO, " ").replace(/\s+/g, " ").trim();
+  const t = trozoLimpio(texto);
   const m = t.match(RE_CANT);
   if (!m) return null;
   const despues = t.slice(m.index + m[0].length).trim();
   const un = UNIDADES_TEXTO.find(x => x.inicio.test(despues));
   return un ? { unidad: un.u, palabra: despues.match(un.inicio)[0] } : null;
 }
+
+/** El número escrito en un material ("10 alambres" → 10), o null si no hay. */
+export function numeroEscrito(texto) {
+  const m = trozoLimpio(texto).match(RE_CANT);
+  return m ? numeroDe(m) : null;
+}
+
+/** Si el texto dice en qué unidad está la cantidad, en cualquier parte ("10 kg de alambre", "cemento en bultos"). */
+export const diceUnidad = texto => { const t = trozoLimpio(texto); return UNIDADES_TEXTO.some(x => new RegExp(x.dentro.source).test(t)); };
 
 /** Materiales parecidos sin tipo ("bloques"): se elige el que usa la obra y se avisa. */
 export function elegirTipo(grupo, id, req) {

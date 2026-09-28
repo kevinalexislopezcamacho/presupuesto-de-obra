@@ -78,6 +78,7 @@ const pantallaVacia = () => ({
   nuevoCotizado: cotizadoVacio(),   // lo que se va escribiendo en "Ítems cotizados"
   textoRapido: "",        // cuadro rápido del presupuesto: lo que se va escribiendo
   avisoRapido: "",        // y qué se agregó la última vez
+  opcionesRapido: [],     // lo que no quedó claro: [{ texto, opciones: [{ id, cantidad, etiqueta, costo }], buscar }]
   oficial: { q: "", capitulo: "", resultado: null, capitulos: null, buscando: false }
 });
 

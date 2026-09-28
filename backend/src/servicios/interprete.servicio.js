@@ -8,9 +8,13 @@
  */
 import { interpretarTexto, extraerMedidas, nombraObra } from "../dominio/texto/interprete.js";
 import { interpretarMateriales } from "../dominio/materiales-texto.js";
+import { revisarMaterial } from "../dominio/opciones-material.js";
+import { INSUMOS } from "../datos/precios.js";
 import { instruccionesObra, instruccionesMateriales, ESQUEMA_OBRA, ESQUEMA_MATERIALES } from "../ia/instrucciones.js";
 import { verificarObra, verificarMateriales } from "../ia/verificar.js";
 import { requerimientosDeObra } from "./calculo.servicio.js";
+import { buscarOficial } from "./listas-oficiales.servicio.js";
+import { limpiarObra } from "./obra-entrada.js";
 
 const MAX_CACHE = 300;
 
@@ -94,12 +98,29 @@ export function crearServicioInterprete({ ia = null } = {}) {
     /**
      * Cuadro rápido del presupuesto: obras y trabajos para sumar al presupuesto, y materiales sueltos para comprar
      * aparte ("10 bultos de cemento"). Un material escrito dentro de una obra ("un muro en bloque de concreto") no es
-     * una compra aparte.
+     * una compra aparte. Lo que no está claro ("10 alambres") llega en `dudas`, con opciones para elegir o qué buscar
+     * en la lista oficial.
      */
     async interpretarAgregado(texto, obra) {
       const [o, m] = await Promise.all([this.interpretarObra(texto), this.leerMateriales(texto, obra)]);
-      const materiales = m.materiales.filter(x => x.id && x.cantidad > 0 && !nombraObra(x.texto || ""));
-      return { partes: o.partes, trabajos: o.trabajos, materiales, noSoportado: o.noSoportado,
+      const req = obra ? requerimientosDeObra(obra) : {}, precios = limpiarObra(obra || {}).precios;
+      const precio = id => precios[id] ?? INSUMOS[id].precio;
+      const sueltos = m.materiales.filter(x => !nombraObra(x.texto || ""));
+      const materiales = [], dudas = [], notas = [];
+      for (const x of sueltos) {
+        const r = revisarMaterial(x, req);
+        if (r?.claro) materiales.push(r.claro);
+        else if (r?.opciones?.length) dudas.push({ texto: x.texto, opciones: r.opciones.map(op => ({ ...op, costo: op.cantidad * precio(op.id) })) });
+        else if (r?.nota) notas.push(r.nota);
+        else if (r?.buscar) {
+          const q = r.buscar.find(q => buscarOficial({ q, limite: 1 }).total > 0);
+          if (q) dudas.push({ texto: x.texto, opciones: [], buscar: q });
+        }
+      }
+      // Una parte que no nombra una obra ni trae medidas ("20 ladrillos", "una ventana") es una suposición del
+      // clasificador: aquí no se agrega un muro que nadie pidió.
+      const partes = o.partes.filter(p => nombraObra(p.texto || "") || Object.keys(p.medidas || {}).length > 0);
+      return { partes, trabajos: o.trabajos, materiales, dudas, notas, noSoportado: o.noSoportado,
         motor: o.motor, avisoIA: o.avisoIA || m.avisoIA || null };
     }
   };

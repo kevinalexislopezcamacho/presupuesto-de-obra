@@ -44,5 +44,5 @@ test("cuadro rápido: obras y trabajos van al presupuesto, los materiales suelto
   const muro = await servicio.interpretarAgregado("un muro de 3 x 2 en bloque de concreto", null);
   assert.deepEqual([muro.partes.length, muro.materiales.length], [1, 0]);
   const nada = await servicio.interpretarAgregado("hola", null);
-  assert.deepEqual([nada.partes, nada.trabajos, nada.materiales], [[], [], []]);
+  assert.deepEqual([nada.partes, nada.trabajos, nada.materiales, nada.dudas], [[], [], [], []]);
 });

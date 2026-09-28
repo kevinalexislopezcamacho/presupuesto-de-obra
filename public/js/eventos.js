@@ -9,7 +9,7 @@ import { historial, guardarObraActual, abrirObra, borrarObra } from "./estado/hi
 import {
   aplicarInterpretacion, resolverDuda, cambiarMaterial, deshacerCambio, agregarMateriales, quitarMaterial,
   dejarAparte, convertirCantidad, agregarElemento, alternarActividad, alternarRemodelacion, agregarTrabajo, ponerPrecio, marcar,
-  agregarHueco, quitarHueco, cambiarHueco, faltaEnCotizado, agregarCotizado, cambiarCotizado, agregarRapido
+  agregarHueco, quitarHueco, cambiarHueco, faltaEnCotizado, agregarCotizado, cambiarCotizado, agregarRapido, elegirOpcionRapido
 } from "./acciones/obra.js";
 import { descargarExcel, imprimirPresupuesto, descargarTiempos } from "./acciones/exportar.js";
 import { textoPresupuesto, textoCompras } from "./acciones/exportar.js";
@@ -80,6 +80,7 @@ const ACCIONES = {
   nueva: () => pantalla(() => { reiniciarObra(); estado.mensaje = ""; estado.pantalla = PANTALLA.OBRA; }),
   volver: () => ir(estado.volverA),
   "agregar-rapido": () => (estado.ocupado ? undefined : obra(() => esperando("Agregando…", agregarRapido))),
+  "descartar-opciones": () => pantalla(() => { estado.opcionesRapido = []; estado.avisoRapido = ""; }),
   "agregar-cotizado": () => {
     const falta = faltaEnCotizado();
     if (falta) return pantalla(() => { estado.nuevoCotizado.error = falta; });
@@ -149,6 +150,11 @@ const CLICS = [
   ["quitarHueco", (valor, ds) => obra(() => quitarHueco(valor, Number(ds.indice)))],
   ["quitarCotizado", valor => obra(() => { estado.cotizados = estado.cotizados.filter(x => x.id !== valor); })],
   ["quitarAdicional", valor => obra(() => { delete estado.comprasAdicionales[valor]; })],
+  ["opcionRapido", valor => obra(() => elegirOpcionRapido(valor))],
+  ["buscarEnOficial", valor => {
+    pantalla(() => { estado.volverA = estado.pantalla; estado.pantalla = PANTALLA.OFICIAL; Object.assign(estado.oficial, { q: valor, capitulo: "" }); });
+    return buscarOficial();
+  }],
   ["materiales", valor => pantalla(() => { estado.pantalla = PANTALLA.MATERIALES; estado.pasoMateriales = valor; })],
   ["quitarMaterial", valor => obra(() => quitarMaterial(valor))],
   ["aparte", valor => pantalla(() => dejarAparte(valor))],

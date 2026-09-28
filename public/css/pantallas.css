@@ -266,3 +266,12 @@ table.apu td:first-child { overflow-wrap: normal; word-break: normal; hyphens: a
 .rapido-fila input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 15px; background: var(--bg); color: var(--ink); }
 .rapido-fila input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
 .agregar-rapido .nota { margin-top: 8px; }
+/* "¿Quiso decir…?": una opción por fila, con su costo */
+.opciones-rapido { margin-top: 10px; display: grid; gap: 12px; justify-items: start; }
+.duda-rapido { display: grid; gap: 6px; width: 100%; }
+.duda-rapido p { margin: 0; font-size: 14px; }
+.opcion-rapido { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; width: 100%; text-align: left;
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--soft); color: var(--ink); font-size: 14px; cursor: pointer; }
+.opcion-rapido:hover { border-color: var(--accent); }
+.opcion-rapido b { flex: none; font-weight: 600; }
+.opcion-rapido small { display: block; color: var(--muted); font-size: 13px; }

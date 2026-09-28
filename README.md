@@ -64,8 +64,8 @@ presupuesto-obra-cali/
 │   │   ├── servicios/            Casos de uso: calcular obra, interpretar texto, catálogo, obras, lista oficial, Excel
 │   │   ├── ia/                   Cliente de Gemini, instrucciones y esquemas, y verificación de lo que responde
 │   │   ├── dominio/              Reglas del negocio en funciones puras
-│   │   │   ├── apu.js, actividades.js, materiales.js, materiales-texto.js,
-│   │   │   │   presupuesto.js, cronograma.js, numeros.js
+│   │   │   ├── apu.js, actividades.js, materiales.js, materiales-texto.js, opciones-material.js,
+│   │   │   │   huecos.js, presupuesto.js, cronograma.js, numeros.js
 │   │   │   └── texto/            Normalización, clasificador Naive Bayes, modelo e intérprete
 │   │   ├── datos/                Precios con fuente, APU, supuestos, tipos de obra, vocabulario,
 │   │   │                         frases de entrenamiento y referencias oficiales
@@ -121,7 +121,7 @@ La pantalla principal presenta la herramienta: un presupuesto de ejemplo (un ba�
    - **Presupuesto** por capítulos (1. Preliminares, 2. Excavaciones y rellenos, 3. Cimentación…), con ítems numerados y subtotales. Cada ítem se despliega y muestra su **APU** (insumos, cantidades, precios con fuente, rendimiento y cuadrilla, o el precio oficial), su **memoria de cantidades** y la referencia oficial.
    - Se descarga en **Excel** (hojas de presupuesto con fórmulas, APU, memoria de cantidades, compras y cronograma) y en **PDF**.
    - En Cronograma se marcan las actividades hechas, y bajan los días que faltan.
-   - **Agregar algo rápido:** junto al total hay un cuadro para escribir sin volver a los pasos. Las obras y los trabajos ("un muro de 3 x 2", "pañetar 20 m²") se suman al presupuesto; los materiales sueltos ("10 bultos de cemento") van a Compras como compra adicional, en el capítulo "Materiales adicionales", y suman su costo.
+   - **Agregar algo rápido:** junto al total hay un cuadro para escribir sin volver a los pasos. Las obras y los trabajos ("un muro de 3 x 2", "pañetar 20 m²") se suman al presupuesto; los materiales sueltos ("10 bultos de cemento") van a Compras como compra adicional, en el capítulo "Materiales adicionales", y suman su costo. Si algo no queda claro, pregunta "¿Quiso decir…?" con opciones y su costo: «10 alambres» (10 kg, 10 rollos o 10 libras), «5 varillas» (de qué calibre), «10 bloques» (de arcilla o de concreto), «10 semento» (cemento). Lo que la herramienta no tiene («10 tejas») se ofrece buscarlo en la lista oficial.
    - En Compras están los materiales que faltan y también los ítems de la lista oficial y los cotizados, con su precio. Se marca lo comprado o contratado, y baja lo que falta por invertir (el total no cambia).
    - En Precios se registran las cotizaciones, por material o por actividad completa, y todo se recalcula. Las actividades que se alejan más de 25 % de su referencia oficial **equivalente** (el mismo elemento y formato, con valor verificado) se marcan; las que no son el mismo producto se muestran como "orientativas" y no marcan.
    - Si hay actividades marcadas, el resumen muestra un **rango**: el total si esas actividades costaran lo oficial (también sale en el PDF y el Excel). Sirve para dejar margen hasta tener cotizaciones.

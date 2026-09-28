@@ -243,10 +243,25 @@ export async function agregarRapido() {
     estado.comprasAdicionales[m.id] = r2((estado.comprasAdicionales[m.id] || 0) + m.cantidad);
     hecho.push(`${r2(m.cantidad)} ${unidad(insumo(m.id).unidad, m.cantidad)} de ${insumo(m.id).nombre.toLowerCase()} (a Compras)`);
   }
-  if (r.noSoportado.length) pendiente.push(`no se calcula: ${r.noSoportado.map(x => x.replace(/ \(.*\)/, "")).join(", ")}`);
+  pendiente.push(...r.notas);
+  // Si se ofrece buscarlo en la lista oficial, la opción ya dice que la herramienta no lo calcula.
+  if (r.noSoportado.length && !r.dudas.some(d => d.buscar)) pendiente.push(`no se calcula: ${r.noSoportado.map(x => x.replace(/ \(.*\)/, "")).join(", ")}`);
+  // Lo que no quedó claro ("10 alambres") se muestra con opciones debajo del cuadro.
+  estado.opcionesRapido = r.dudas;
   estado.avisoRapido = hecho.length
     ? `Se agregó: ${hecho.join(" · ")}.${pendiente.length ? ` (${pendiente.join("; ")})` : ""}`
-    : pendiente.length ? `No se agregó nada: ${pendiente.join("; ")}.`
-      : "No se entendió qué agregar. Escríbalo de otra forma, por ejemplo «pañetar 20 m²» o «10 bultos de cemento».";
-  if (hecho.length) estado.textoRapido = "";
+    : pendiente.length ? `${r.dudas.length ? "Falta" : "No se agregó nada"}: ${pendiente.join("; ")}.`
+      : r.dudas.length ? ""
+        : "No se entendió qué agregar. Escríbalo de otra forma, por ejemplo «pañetar 20 m²» o «10 bultos de cemento».";
+  if (hecho.length || r.dudas.length) estado.textoRapido = "";
+}
+
+/** Una de las opciones de "¿Quiso decir…?" (valor "duda-opción"): el material va a Compras como compra adicional. */
+export function elegirOpcionRapido(valor) {
+  const [i, j] = valor.split("-").map(Number);
+  const o = estado.opcionesRapido[i]?.opciones[j];
+  if (!o) return;
+  estado.comprasAdicionales[o.id] = r2((estado.comprasAdicionales[o.id] || 0) + o.cantidad);
+  estado.opcionesRapido.splice(i, 1);
+  estado.avisoRapido = `Se agregó a Compras: ${o.nombre}, ${o.medida}.`;
 }

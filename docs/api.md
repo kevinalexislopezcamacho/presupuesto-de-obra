@@ -99,7 +99,7 @@ Respuesta:
 Cuadro "Agregar algo rápido" del presupuesto. Mismo cuerpo que `/interpretaciones/materiales` (`texto` y `obra` opcional). Separa lo que se construye de lo que se compra aparte:
 
 ```json
-{ "texto": "pañetar 20 m2 y 10 bultos de cemento", "obra": { "elementos": [{ "tipo": "bano" }] } }
+{ "texto": "pañetar 20 m2, 10 bultos de cemento, 10 alambres y 10 tejas", "obra": { "elementos": [{ "tipo": "bano" }] } }
 ```
 
 Respuesta:
@@ -109,14 +109,30 @@ Respuesta:
   "partes": [],
   "trabajos": [{ "codigo": "PAN-01", "cantidad": 20 }],
   "materiales": [{ "texto": "10 bultos de cemento", "id": "cem", "cantidad": 10, "nota": "" }],
-  "noSoportado": [],
+  "dudas": [
+    { "texto": "10 alambres", "opciones": [
+      { "id": "alb", "cantidad": 10, "nombre": "Alambre negro cal. 18", "medida": "10 kg", "costo": 67900 },
+      { "id": "alb", "cantidad": 100, "nombre": "Alambre negro cal. 18", "medida": "10 rollos (100 kg)", "costo": 679000 },
+      { "id": "alb", "cantidad": 4.54, "nombre": "Alambre negro cal. 18", "medida": "10 lb (4,54 kg)", "costo": 30827 }
+    ] },
+    { "texto": "10 tejas", "opciones": [], "buscar": "tejas" }
+  ],
+  "notas": [],
+  "noSoportado": ["techos o cubiertas"],
   "motor": "reglas",
   "avisoIA": null
 }
 ```
 
-- `partes` y `trabajos` son como en `/interpretaciones/obra`: se suman al presupuesto y sus materiales salen en Compras.
-- `materiales` son compras aparte: solo los que tienen cantidad. El material nombrado dentro de una obra ("un muro de 3 x 2 en bloque de concreto") no se cuenta como compra aparte.
+- `partes` y `trabajos` son como en `/interpretaciones/obra`: se suman al presupuesto y sus materiales salen en Compras. Una parte que no nombra una obra ni trae medidas ("20 ladrillos", "una ventana") no se agrega.
+- `materiales` son compras aparte que quedaron claras. El material nombrado dentro de una obra ("un muro de 3 x 2 en bloque de concreto") no se cuenta como compra aparte.
+- `dudas`: lo que no quedó claro, para que la persona elija. `cantidad` ya está en la unidad del insumo y `costo` usa el precio cotizado si lo hay. Salen opciones cuando:
+  - no se escribió la unidad de un material que se vende por kg, lb, m, m² o m³ ("10 alambres": kilos, rollos o libras);
+  - faltó el calibre de las varillas ("5 varillas": 3/8", 1/2" o 5/8");
+  - faltó el tipo ("10 bloques": de arcilla o de concreto, primero el que usa la obra);
+  - la palabra parece mal escrita ("10 semento": cemento).
+  Si no está en la base, `buscar` trae qué buscar en la lista oficial (solo si allí hay resultados).
+- `notas`: lo que falta para agregar algo ("cemento: falta la cantidad", "3 volquetas": la cantidad en m³).
 
 ## Cálculo
 

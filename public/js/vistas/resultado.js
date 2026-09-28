@@ -232,6 +232,21 @@ function agregarRapido() {
     <div class="rapido-fila"><input id="rapido" type="text" maxlength="500" value="${esc(estado.textoRapido)}" placeholder="Ej.: pañetar 20 m², un muro de 3 x 2, 10 bultos de cemento" ${estado.ocupado ? "disabled" : ""}>
       <button class="btn chico" data-accion="agregar-rapido" ${estado.ocupado ? "disabled" : ""}>${estado.ocupado ? "Agregando…" : "Agregar"}</button></div>
     ${estado.avisoRapido ? `<p class="nota" role="status">${esc(estado.avisoRapido)}</p>` : ""}
+    ${opcionesRapido()}
+  </div>`;
+}
+
+/** "¿Quiso decir…?": lo que no quedó claro, con opciones para elegir o qué buscar en la lista oficial. */
+function opcionesRapido() {
+  const dudas = estado.opcionesRapido;
+  if (!dudas.length) return "";
+  return `<div class="opciones-rapido" role="group" aria-label="Opciones para lo que no quedó claro">
+    ${dudas.map((d, i) => `<div class="duda-rapido">
+      <p>«${esc(d.texto)}»: ${d.opciones.length ? "¿quiso decir…?" : "la herramienta no lo calcula, pero puede estar en la lista oficial."}</p>
+      ${d.opciones.map((o, j) => `<button class="opcion-rapido" data-opcion-rapido="${i}-${j}"><span>${esc(o.medida)}<small>${esc(o.nombre)}</small></span><b>${pesos.format(o.costo)}</b></button>`).join("")}
+      ${d.buscar ? `<button class="opcion-rapido" data-buscar-en-oficial="${esc(d.buscar)}"><span>Buscar «${esc(d.buscar)}» en la lista oficial</span></button>` : ""}
+    </div>`).join("")}
+    <button class="enlace" data-accion="descartar-opciones">Ninguna de estas</button>
   </div>`;
 }
 
