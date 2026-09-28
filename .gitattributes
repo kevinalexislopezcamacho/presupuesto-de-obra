@@ -1,0 +1,10 @@
+# Finales de línea LF en el repositorio (evita los avisos "LF will be replaced by CRLF" en Windows)
+* text=auto eol=lf
+
+# Archivos binarios
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.docx binary

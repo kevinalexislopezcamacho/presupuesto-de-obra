@@ -1,0 +1,23 @@
+{
+  "name": "presupuesto-obra-cali-backend",
+  "version": "1.0.0",
+  "description": "API del presupuesto de obra: APU, intérprete de texto (IA con Gemini y reglas con Naive Bayes), cálculos y obras guardadas.",
+  "private": true,
+  "type": "module",
+  "main": "src/servidor.js",
+  "scripts": {
+    "start": "node src/servidor.js",
+    "dev": "node --watch src/servidor.js",
+    "test": "node --test",
+    "docs": "node scripts/generar-docs.js",
+    "ia:probar": "node scripts/probar-ia.js",
+    "ia:evaluar": "node scripts/evaluar-ia.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1"
+  }
+}

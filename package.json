@@ -1,0 +1,17 @@
+{
+  "name": "presupuesto-obra-cali",
+  "version": "1.0.0",
+  "description": "Publicación en Vercel: index.js exporta la API de backend/ y vercel-build copia frontend/ a public/. Para trabajar en el computador se usa la carpeta backend/.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vercel-build": "node backend/scripts/publicar-frontend.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,7 @@
+# Lo que no se sube a Vercel (la clave de Gemini va en las variables de entorno del proyecto, nunca en un archivo)
+.env
+backend/.env
+**/node_modules
+backend/almacenamiento
+public
+.vercel

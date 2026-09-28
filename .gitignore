@@ -1,0 +1,18 @@
+# Dependencias
+node_modules/
+
+# Datos que genera el servidor al usarse (obras guardadas)
+backend/almacenamiento/
+
+# Configuración local
+.env
+
+# Publicación en Vercel: public/ se genera al publicar (copia de frontend/)
+/public/
+.vercel/
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
