@@ -17,7 +17,7 @@ Cuando hay un error, la respuesta es `{ "error": { "mensaje": "…" } }` con uno
 |---|---|---|
 | GET | `/api/salud` | `{ "estado": "ok" }` |
 | GET | `/api/catalogo` | Tipos de obra con sus medidas, insumos (precio, fuente, enlace), APU con costo unitario, reemplazos posibles, conversiones, tiendas, fases, AIU por defecto, mano de obra y referencias oficiales |
-| GET | `/api/diagnostico` | Estado de la base de APU, exactitud del modelo (validación cruzada y matriz de confusión), resultado del intérprete con frases nuevas e `ia: { activa, proveedor, via, modelo, modelos }` (nunca la clave) |
+| GET | `/api/diagnostico` | Estado de la base de APU, exactitud del modelo (validación cruzada y matriz de confusión), resultado del intérprete con frases nuevas e `ia: { activa }` (qué servicio y qué modelo de IA se usa es interno: no se publica) |
 
 ## Lenguaje natural
 
@@ -34,9 +34,6 @@ Respuesta:
 ```json
 {
   "motor": "ia",
-  "proveedor": "Gemini",
-  "via": "AI Studio",
-  "modelo": "gemini-3.5-flash-lite",
   "partes": [
     { "tipo": "muro", "cantidad": 4, "medidas": { "largo": 3, "alto": 2.5 }, "sistema": null, "excluir": [], "fuente": "la IA", "…": "…" },
     { "tipo": "bano", "cantidad": 1, "medidas": { "largo": 2, "ancho": 1.5 }, "excluir": ["ACB-01"], "…": "…" }
@@ -50,7 +47,7 @@ Respuesta:
 }
 ```
 
-- `motor`: `"ia"` o `"reglas"`. Si se quiso usar la IA y no se pudo, llega `avisoIA` con la razón.
+- `motor`: `"ia"` o `"reglas"`. Si se quiso usar la IA y no se pudo, llega `avisoIA` con un aviso general; la razón técnica queda en la consola del servidor.
 - `partes[].excluir`: códigos de actividades que la persona pidió quitar ("sin enchape" → `ACB-01`).
 - `trabajos`: trabajos sueltos, cada uno con `codigo` y `cantidad`, más `detalle` (la cuenta: "5 × 4 m") y `aviso` cuando aplica (por ejemplo, columnas grandes). La cantidad la calcula la herramienta a partir de las medidas escritas.
 - `materiales`: materiales que la descripción dice que ya se tienen, ya en la unidad de cálculo.

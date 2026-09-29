@@ -20,7 +20,6 @@ function escribirPie() {
   if (d) {
     partes.push(`Base: ${d.base.apu} APU y ${d.base.insumos} insumos, ${d.base.errores.length ? `${d.base.errores.length} errores` : "sin errores"}.`);
     partes.push(`Modelo de texto: ${Math.round(d.modelo.exactitud * 100)} % de exactitud en validación cruzada.`);
-    partes.push(d.ia?.activa ? `IA: ${d.ia.proveedor} (${d.ia.modelo}), verificada por la herramienta.` : "IA desactivada: se entiende el texto con reglas.");
   }
   document.querySelector("#pie").textContent = partes.join(" ");
 }

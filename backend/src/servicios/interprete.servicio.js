@@ -20,13 +20,16 @@ const MAX_CACHE = 300;
 
 // El mismo error se escribe en la consola una vez cada 5 minutos, no en cada petición.
 const ultimaVez = new Map();
-/** Mensaje para la persona cuando la IA falla; el detalle técnico queda en la consola del servidor. */
+/**
+ * Mensaje para la persona cuando la IA falla. Es general: el servicio y el modelo de IA son internos y no se
+ * muestran; el detalle técnico queda en la consola del servidor.
+ */
 function avisoFallo(e, siguiente) {
   if (Date.now() - (ultimaVez.get(e.message) || 0) > 5 * 60 * 1000) {
     ultimaVez.set(e.message, Date.now());
     console.error(`[IA] ${e.message}${e.detalle ? ` · ${e.detalle}` : ""}${e.ayuda ? `\n[IA] Para arreglarlo: ${e.ayuda}` : ""}`);
   }
-  return `No se pudo usar la IA: ${e.message.replace(/\.$/, "")}. ${siguiente}`;
+  return `No se pudo usar la IA en este momento. ${siguiente}`;
 }
 
 /** El intérprete por reglas con los mismos campos que devuelve la IA. */
@@ -50,17 +53,18 @@ export function crearServicioInterprete({ ia = null } = {}) {
     }
     return cache.get(clave);
   }
-  const motorIA = modelo => ({ motor: "ia", proveedor: ia.nombre, via: ia.via ?? null, modelo: modelo || ia.modelo });
+  // Hacia la página solo se dice si entendió la IA o las reglas: qué servicio y qué modelo es queda interno.
+  const MOTOR_IA = { motor: "ia" };
 
   return {
-    /** Si la IA está activa y cuál es (nunca la clave). */
-    estadoIA: () => ({ activa: Boolean(ia), proveedor: ia?.nombre ?? null, via: ia?.via ?? null, modelo: ia?.modelo ?? null, modelos: ia?.modelos ?? [] }),
+    /** Si la IA está activa (sin decir cuál es ni, por supuesto, la clave). */
+    estadoIA: () => ({ activa: Boolean(ia) }),
 
     /** "4 muros de 3 x 2,5 y un baño sin enchape" → partes, trabajos, materiales, observaciones, dudas y lo que no se calcula. */
     async interpretarObra(texto) {
       if (!ia) return porReglas(texto);
       try {
-        const { respuesta: salida, modelo } = await preguntar(`obra\n${texto}`, { instrucciones: instruccionesObra(), mensaje: texto, esquema: ESQUEMA_OBRA });
+        const { respuesta: salida } = await preguntar(`obra\n${texto}`, { instrucciones: instruccionesObra(), mensaje: texto, esquema: ESQUEMA_OBRA });
         // Los materiales parecidos ("bloques") se deciden con lo que usa la obra descrita.
         const previa = verificarObra(salida, texto);
         const elementos = previa.partes.map(p => ({ ...p, medidas: { ...p.medidas, ...(p.sistema ? { sistema: p.sistema } : {}) } }));
@@ -71,7 +75,7 @@ export function crearServicioInterprete({ ia = null } = {}) {
           const reglas = porReglas(texto);
           if (reglas.partes.length || reglas.trabajos.length) return { ...reglas, avisoIA: "La IA no encontró nada que calcular; se entendió con reglas." };
         }
-        return { ...res, ...motorIA(modelo) };
+        return { ...res, ...MOTOR_IA };
       } catch (e) {
         return { ...porReglas(texto), avisoIA: avisoFallo(e, "Se entendió con reglas.") };
       }
@@ -86,10 +90,10 @@ export function crearServicioInterprete({ ia = null } = {}) {
       const reglas = () => ({ materiales: interpretarMateriales(texto, req), verificacion: [], motor: "reglas" });
       if (!ia) return reglas();
       try {
-        const { respuesta: salida, modelo } = await preguntar(`materiales\n${texto}`, { instrucciones: instruccionesMateriales(), mensaje: texto, esquema: ESQUEMA_MATERIALES });
+        const { respuesta: salida } = await preguntar(`materiales\n${texto}`, { instrucciones: instruccionesMateriales(), mensaje: texto, esquema: ESQUEMA_MATERIALES });
         const res = verificarMateriales(salida, texto, req);
         if (!res.materiales.length) return { ...reglas(), avisoIA: "La IA no encontró materiales; se leyeron con reglas." };
-        return { ...res, ...motorIA(modelo) };
+        return { ...res, ...MOTOR_IA };
       } catch (e) {
         return { ...reglas(), avisoIA: avisoFallo(e, "Se leyeron con reglas.") };
       }

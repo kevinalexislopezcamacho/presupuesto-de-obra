@@ -38,7 +38,7 @@ function notaIA() {
   const ia = estado.diagnostico?.ia;
   if (!ia) return "";
   return ia.activa
-    ? `<p class="nota"><span class="insignia ia">IA · ${esc(ia.proveedor)}</span> La descripción se envía a ${esc(ia.proveedor)} (Google) para interpretarla. La herramienta verifica cada número contra lo escrito y calcula todo con sus propias fórmulas.</p>`
+    ? `<p class="nota"><span class="insignia ia">IA</span> La descripción se envía a un servicio de inteligencia artificial para interpretarla. La herramienta verifica cada número contra lo escrito y calcula todo con sus propias fórmulas.</p>`
     : `<p class="nota">Puede pedir varias cosas separadas por comas o “y”, con sus medidas, e indicar lo que no se incluye: “sin enchape”.</p>`;
 }
 

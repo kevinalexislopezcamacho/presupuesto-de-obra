@@ -38,7 +38,7 @@ export function nombrePorDefecto() {
 export function insigniaMotor(res) {
   if (!res?.motor) return "";
   return res.motor === "ia"
-    ? `<span class="insignia ia" title="Interpretado con ${esc(res.proveedor || "IA")} (${esc(res.modelo || "")}) y verificado por la herramienta">IA · ${esc(res.proveedor || "")}</span>`
+    ? `<span class="insignia ia" title="Interpretado con inteligencia artificial y verificado por la herramienta">IA</span>`
     : `<span class="insignia" title="Interpretado con el intérprete por reglas">Reglas</span>`;
 }
 
