@@ -11,15 +11,7 @@
   --margen: 20px;
   --barra: 59px;           /* alto de la barra superior con su línea de progreso */
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #171411; --soft: #231F1A; --card: #1D1915; --ink: #EEE7DB; --muted: #A89C8C; --line: #37312A;
-    --accent: #D2A877; --accent-ink: #1B1712; --accent-soft: #3B3024;
-    --ok: #8CBF6C; --warn: #E0A858; --danger: #E58370;
-    --sombra: 0 1px 2px rgb(0 0 0 / .3), 0 6px 20px rgb(0 0 0 / .25);
-  }
-}
+/* Oscuro: se elige con el botón de la barra (js/utilidades/tema.js). */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #171411; --soft: #231F1A; --card: #1D1915; --ink: #EEE7DB; --muted: #A89C8C; --line: #37312A;

@@ -5,6 +5,7 @@
 import * as api from "./api/cliente.js";
 import { estado, PANTALLA, PASOS, datosDeObra, guardarBorrador } from "./estado/estado.js";
 import { esc } from "./utilidades/formato.js";
+import { observarRevelables } from "./utilidades/revelar.js";
 import { pantallaInicio } from "./vistas/inicio.js";
 import { pantallaObra } from "./vistas/obra.js";
 import { pantallaMedidas } from "./vistas/medidas.js";
@@ -40,6 +41,7 @@ export function render() {
     const foco = document.activeElement?.id;
     const error = estado.error ? `<div class="aviso no" role="alert"><strong>Algo falló.</strong>${esc(estado.error)}</div>` : "";
     $("#app").innerHTML = error + VISTAS[estado.pantalla]();
+    observarRevelables($("#app"));
     document.body.dataset.pantalla = estado.pantalla;   // el CSS ajusta el ancho según la pantalla
     barraDeProgreso();
     if (ultimaPantalla !== estado.pantalla) {

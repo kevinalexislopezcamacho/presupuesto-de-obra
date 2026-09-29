@@ -1,32 +1,31 @@
 /**
- * Tema de color: automático (el del sistema), claro u oscuro. Se recuerda en este navegador.
+ * Tema de color: claro u oscuro, con el botón de la barra. Empieza en claro y se recuerda en este navegador.
  * index.html aplica el guardado antes de dibujar, para que no parpadee.
  */
 const CLAVE = "presupuesto-obra-tema";
-const TEMAS = [
-  { id: "auto", icono: "◐", nombre: "automático" },
-  { id: "claro", icono: "☀", nombre: "claro" },
-  { id: "oscuro", icono: "☾", nombre: "oscuro" }
-];
+const TEMAS = {
+  claro: { html: "light", icono: "☀", color: "#FCFAF6", otro: "oscuro" },
+  oscuro: { html: "dark", icono: "☾", color: "#171411", otro: "claro" }
+};
 
-const leer = () => { try { return localStorage.getItem(CLAVE) || "auto"; } catch { return "auto"; } };
+const leer = () => { try { return localStorage.getItem(CLAVE) === "oscuro" ? "oscuro" : "claro"; } catch { return "claro"; } };
 
-/** Aplica un tema y actualiza el botón de la barra. */
+/** Aplica un tema y actualiza el botón de la barra y el color de la barra del navegador en el celular. */
 export function aplicarTema(id = leer()) {
-  const tema = TEMAS.find(t => t.id === id) || TEMAS[0];
-  if (tema.id === "auto") delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = tema.id === "oscuro" ? "dark" : "light";
+  const tema = TEMAS[id] || TEMAS.claro;
+  document.documentElement.dataset.theme = tema.html;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tema.color);
   const boton = document.querySelector("#tema");
   if (boton) {
     boton.textContent = tema.icono;
-    boton.title = `Tema ${tema.nombre} (clic para cambiar)`;
+    boton.title = `Tema ${tema === TEMAS.oscuro ? "oscuro" : "claro"}: clic para pasar a ${tema.otro}`;
     boton.setAttribute("aria-label", boton.title);
   }
 }
 
-/** Pasa al siguiente tema: automático → claro → oscuro. */
+/** Cambia entre claro y oscuro (según el que se ve, por si el navegador no deja guardar). */
 export function cambiarTema() {
-  const siguiente = TEMAS[(TEMAS.findIndex(t => t.id === leer()) + 1) % TEMAS.length].id;
+  const siguiente = document.documentElement.dataset.theme === "dark" ? "claro" : "oscuro";
   try { localStorage.setItem(CLAVE, siguiente); } catch { /* sin almacenamiento: dura hasta recargar */ }
   aplicarTema(siguiente);
 }

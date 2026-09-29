@@ -128,7 +128,7 @@ La pantalla principal presenta la herramienta: un presupuesto de ejemplo (un ba�
    - Con "Terminado", la obra queda en "Mis obras" con sus precios y el **tiempo que tomó elaborarla**. Desde "Mis obras" se descargan los tiempos en CSV para la validación con arquitectos.
    - "Mis obras" se guarda **en el navegador de cada dispositivo**: cada persona ve solo las suyas y siguen ahí al volver a entrar, sin inicio de sesión, también con la herramienta publicada. Se pierden si se borran los datos del navegador o se usa modo incógnito, y no pasan de un dispositivo a otro.
 
-La interfaz se adapta a celular, tablet y computador, y tiene tema claro y oscuro (automático o a elección, con el botón de la barra).
+La interfaz se adapta a celular, tablet y computador, y tiene tema claro y oscuro, que se cambia con el botón de la barra (empieza en claro y se recuerda en el navegador).
 
 ## Aprendizaje automático
 
