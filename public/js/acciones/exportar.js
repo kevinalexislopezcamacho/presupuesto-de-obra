@@ -92,9 +92,10 @@ export function imprimirPresupuesto() {
     ${fila(`Subtotal capítulo ${c.numero}`, null, c.subtotal, "sub")}`).join("");
   const pct = k => `${num.format(r2(estado.aiu[k] * 100))} %`;
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Presupuesto - ${esc(nombreObra())}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     @page { size: letter; margin: 16mm 14mm; }
-    body { font: 10.5pt/1.4 "Helvetica Neue", Arial, sans-serif; color: #222; margin: 0; }
+    body { font: 10.5pt/1.4 "Inter", "Segoe UI", Roboto, Arial, sans-serif; color: #222; margin: 0; font-variant-numeric: tabular-nums; }
     h1 { font-size: 16pt; margin: 0 0 4pt; } .meta { color: #555; margin-bottom: 12pt; } .meta b { color: #222; }
     table { width: 100%; border-collapse: collapse; } th, td { padding: 4pt 5pt; border-bottom: 0.5pt solid #ccc; vertical-align: top; text-align: left; }
     th { background: #f1ece3; font-size: 9pt; } td.n, th.n { text-align: right; white-space: nowrap; }
@@ -117,8 +118,16 @@ export function imprimirPresupuesto() {
   const marco = document.createElement("iframe");
   marco.style.cssText = "position:fixed;width:0;height:0;border:0;right:0;bottom:0";
   document.body.appendChild(marco);
-  marco.contentDocument.open();
-  marco.contentDocument.write(html);
-  marco.contentDocument.close();
-  setTimeout(() => { marco.contentWindow.focus(); marco.contentWindow.print(); setTimeout(() => marco.remove(), 2000); }, 300);
+  const doc = marco.contentDocument;
+  doc.open();
+  doc.write(html);
+  doc.close();
+  // Se imprime con la misma letra de la página: se espera a que cargue (sin pasar de 2 s si no hay internet).
+  const espera = ms => new Promise(listo => setTimeout(listo, ms));
+  const letra = Promise.all(["400 10pt Inter", "600 10pt Inter", "700 10pt Inter"].map(f => doc.fonts.load(f))).catch(() => {});
+  Promise.race([letra, espera(2000)]).then(() => {
+    marco.contentWindow.focus();
+    marco.contentWindow.print();
+    setTimeout(() => marco.remove(), 2000);
+  });
 }

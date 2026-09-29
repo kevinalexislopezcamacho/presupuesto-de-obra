@@ -9,6 +9,7 @@ import { mapsBuscar } from "../utilidades/navegador.js";
 import { describirElemento, nombrePorDefecto, cargando, nombreActividad } from "./comunes.js";
 import { tiendasDeCali } from "./materiales.js";
 import { capitulosDe } from "../acciones/exportar.js";
+import { ICONO_SI } from "../utilidades/iconos.js";
 
 const DIAS_VIGENCIA = 90;         // un precio de referencia con más días se marca como posiblemente desactualizado
 const UNIDAD = { hh: "hora", h: "hora" };
@@ -117,7 +118,7 @@ function panelCronograma({ lineas, cronograma }) {
   const barra = (desde, hasta, clase) => `<i class="${clase}" style="left:${(desde / n) * 100}%;width:${Math.max(0.6, ((hasta - desde) / n) * 100)}%"></i>`;
   const fechas = (a, dias) => {
     const d1 = diaHabil(ini, Math.floor(a)), d2 = diaHabil(ini, Math.ceil(a + dias) - 1);
-    return aISO(d1) === aISO(d2) ? fechaCorta(d1) : `${fechaCorta(d1)} → ${fechaCorta(d2)}`;
+    return aISO(d1) === aISO(d2) ? fechaCorta(d1) : `${fechaCorta(d1)} – ${fechaCorta(d2)}`;
   };
   const casilla = l => `<input type="checkbox" id="h-${l.codigo}" data-hecha="${l.codigo}" ${estado.hechas.includes(l.codigo) ? "checked" : ""} aria-label="Marcar como hecha: ${esc(l.nombre)}">`;
   const avancePct = Math.round(avance.pct * 100);
@@ -135,11 +136,11 @@ function panelCronograma({ lineas, cronograma }) {
       ${grupos.map((g, k) => {
         const tr = g.lineas.map(l => tramoDe[l.codigo]).filter(Boolean);
         const a = tr.length ? tr[0].inicio : 0, z = tr.length ? tr[tr.length - 1].inicio + tr[tr.length - 1].dias : 0;
-        return `<div class="crono-fila fase"><span class="nom"><b>${k + 1}. ${esc(g.nombre)}</b><small>${tr.length ? fechas(a, z - a) : "✓ Terminada"}</small></span>
+        return `<div class="crono-fila fase"><span class="nom"><b>${k + 1}. ${esc(g.nombre)}</b><small>${tr.length ? fechas(a, z - a) : `${ICONO_SI} Terminada`}</small></span>
             <span class="pista" style="${semana}">${tr.length ? barra(a, z, "f") : ""}</span></div>
           ${g.lineas.map(l => {
             const t = tramoDe[l.codigo], hecha = !t;
-            return `<div class="crono-fila${hecha ? " hecha" : ""}"><label class="nom tarea">${casilla(l)}<span>${esc(l.nombre)}<small>${hecha ? "✓ Hecha" : `${fechas(t.inicio, t.dias)} · ${num.format(t.dias)} ${t.dias === 1 ? "día" : "días"}`}</small></span></label>
+            return `<div class="crono-fila${hecha ? " hecha" : ""}"><label class="nom tarea">${casilla(l)}<span>${esc(l.nombre)}<small>${hecha ? `${ICONO_SI} Hecha` : `${fechas(t.inicio, t.dias)} · ${num.format(t.dias)} ${t.dias === 1 ? "día" : "días"}`}</small></span></label>
             <span class="pista" style="${semana}">${hecha ? "" : barra(t.inicio, t.inicio + t.dias, "")}</span></div>`;
           }).join("")}`;
       }).join("")}
@@ -154,7 +155,7 @@ const ORIGEN_COMPRA = { oficial: "lista oficial", cotizado: "cotización" };
 function panelCompras({ compras }) {
   const porComprar = compras.filter(c => !c.comprado);
   const fila = c => {
-    const donde = c.comprado ? "✓ Comprado"
+    const donde = c.comprado ? `${ICONO_SI} Comprado`
       : c.tipo === "material" ? `<a href="${mapsBuscar(`${c.tienda} Cali`)}" target="_blank" rel="noopener">dónde comprar</a>`
         : c.tipo === "oficial" ? "precio oficial de la Gobernación" : "según la cotización";
     const etiqueta = ORIGEN_COMPRA[c.tipo] ? ` <span class="tag${c.tipo === "cotizado" ? " propio" : ""}">${ORIGEN_COMPRA[c.tipo]}</span>` : "";
@@ -187,7 +188,7 @@ function filaInsumo(p) {
   const fuente = ins.tiendas
     ? `${esc(ins.fuente.toLowerCase())}: ${ins.tiendas.map(t => `${enlace(t.url, t.tienda)} ${pesos.format(t.precio)}`).join(", ")}`
     : enlace(ins.url, ins.fuente);
-  const porDia = ins.tipo === "mo" ? ` · ≈ ${pesos.format(p.precio * 8)} por día de 8 h` : "";
+  const porDia = ins.tipo === "mo" ? ` · unos ${pesos.format(p.precio * 8)} por día de 8 h` : "";
   return `<div class="fila con-campo precio${p.propio ? " propia" : ""}">
     <span class="nom">${esc(ins.nombre)}${p.propio ? ` <span class="tag propio">cotizado</span>` : ""}
       <small>Referencia ${pesos.format(p.referencia)} por ${u} · ${fuente}${v.texto ? ` · ${v.texto}` : ""}${porDia}</small>

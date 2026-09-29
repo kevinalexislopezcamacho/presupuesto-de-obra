@@ -9,9 +9,10 @@ import { catalogo, insumo, nombreCortoApu } from "../estado/catalogo.js";
 import { esc, num, pesos, mayus, cantU, listaY, r2 } from "../utilidades/formato.js";
 import { mapsBuscar, mapsRuta } from "../utilidades/navegador.js";
 import { cargando, ocupado } from "./comunes.js";
+import { ICONO_SI, ICONO_NO } from "../utilidades/iconos.js";
 
 const SUBPASOS = [["tengo", "Disponibles"], ["revision", "Revisión"], ["faltan", "Por comprar"]];
-const ICONO = { bien: "✓", mal: "✗", duda: "?", otro: "–" };
+const ICONO = { bien: ICONO_SI, mal: ICONO_NO, duda: "?", otro: "–" };
 const atras = attrs => `<button class="enlace" ${attrs}>Atrás</button>`;
 const boton = (attrs, texto, secundario = true) => `<button class="btn ${secundario ? "sec " : ""}chico" ${attrs}>${texto}</button>`;
 
@@ -170,7 +171,7 @@ function pantallaFaltan(calculo) {
   const costoDe = id => calculo.compras.find(c => c.id === id)?.costo || 0;
   const fila = i => {
     const ins = insumo(i.id), u = ins.unidad;
-    const detalle = i.falta <= 1e-9 ? "✓ Ya alcanza" : i.tiene > 0 ? `Hay ${cantU(r2(i.tiene), u)}; faltan ${cantU(i.compraFalta, u)}` : `Se necesitan ${cantU(i.compraFalta, u)}`;
+    const detalle = i.falta <= 1e-9 ? `${ICONO_SI} Ya alcanza` : i.tiene > 0 ? `Hay ${cantU(r2(i.tiene), u)}; faltan ${cantU(i.compraFalta, u)}` : `Se necesitan ${cantU(i.compraFalta, u)}`;
     if (modo === "tengo") return `<div class="fila"><span class="nom">${esc(ins.nombre)}<small>${detalle}</small></span>
       <span class="val"><input class="cant" id="t-${i.id}" data-tengo="${i.id}" type="number" min="0" step="any" inputmode="decimal" placeholder="Cantidad" value="${estado.disponibles[i.id] ?? ""}" aria-label="Cantidad disponible de ${esc(ins.nombre)} (${u})"><span class="uni">${u}</span></span></div>`;
     if (modo === "comprar") return `<div class="fila"><span class="nom">${esc(ins.nombre)}<small>Comprar ${cantU(i.compraFalta, u)} · <a href="${mapsBuscar(`${ins.tienda} Cali`)}" target="_blank" rel="noopener">dónde comprar</a></small></span>

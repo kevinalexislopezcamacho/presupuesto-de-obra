@@ -100,8 +100,8 @@ export function generarActividades(tipo, m, { excluir = [], remodelacion = false
   } else if (tipo === "casa") {
     const longitudMuros = P * (1 + S.murosInternosCasa);
     const e = estructuraMuros(longitudMuros, m.alto, vanos(longitudMuros * m.alto * S.vanosCasa), m.sistema, true,
-      `${perimetro} × ${d(1 + S.murosInternosCasa)} (muros internos ≈ ${Math.round(S.murosInternosCasa * 100)} %) = ${d(longitudMuros)} m`,
-      detallados ? detalle : `≈ ${Math.round(S.vanosCasa * 100)} % del área de muros`);
+      `${perimetro} × ${d(1 + S.murosInternosCasa)} (más unos ${Math.round(S.murosInternosCasa * 100)} % de muros internos) = ${d(longitudMuros)} m`,
+      detallados ? detalle : `unos ${Math.round(S.vanosCasa * 100)} % del área de muros`);
     const b = Math.max(0, Math.round(m.banos)), area = m.largo * m.ancho;
     nZapatas = e.nCol;
     lineas = [...e.lineas,

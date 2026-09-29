@@ -22,7 +22,7 @@ export function convertirUnidad(id, cantidad, unidad, palabra, texto, calibre = 
     const cal = calibre || (texto.match(/\b(1\/4|3\/8|1\/2|5\/8|3\/4)\b/) || [])[1];
     if (!cal) return { cantidad: null, nota: `Hay ${decimal(cantidad)} varillas, pero falta el calibre (3/8", 1/2"…): indique el calibre o cuántos kg son.` };
     const kg = r2(cantidad * PESO_VARILLA[cal]);
-    return { cantidad: kg, nota: `${decimal(cantidad)} varillas de ${cal}" × 6 m ≈ ${decimal(kg)} kg` };
+    return { cantidad: kg, nota: `${decimal(cantidad)} varillas de ${cal}" × 6 m = unos ${decimal(kg)} kg` };
   }
   const c = CONVERSION_TEXTO[`${id}:${unidad}`];
   if (c) { const v = r2(cantidad * c[0]); return { cantidad: v, nota: c[1] ? `${decimal(cantidad)} ${palabra} = ${decimal(v)} ${destino} (${c[1]})` : "" }; }

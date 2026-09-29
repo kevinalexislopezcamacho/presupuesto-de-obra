@@ -2,10 +2,12 @@
  * Tema de color: claro u oscuro, con el botón de la barra. Empieza en claro y se recuerda en este navegador.
  * index.html aplica el guardado antes de dibujar, para que no parpadee.
  */
+import { ICONO_SOL, ICONO_LUNA } from "./iconos.js";
+
 const CLAVE = "presupuesto-obra-tema";
 const TEMAS = {
-  claro: { html: "light", icono: "☀", color: "#FCFAF6", otro: "oscuro" },
-  oscuro: { html: "dark", icono: "☾", color: "#171411", otro: "claro" }
+  claro: { html: "light", icono: ICONO_SOL, color: "#FCFAF6", otro: "oscuro" },
+  oscuro: { html: "dark", icono: ICONO_LUNA, color: "#171411", otro: "claro" }
 };
 
 const leer = () => { try { return localStorage.getItem(CLAVE) === "oscuro" ? "oscuro" : "claro"; } catch { return "claro"; } };
@@ -17,7 +19,7 @@ export function aplicarTema(id = leer()) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tema.color);
   const boton = document.querySelector("#tema");
   if (boton) {
-    boton.textContent = tema.icono;
+    boton.innerHTML = tema.icono;
     boton.title = `Tema ${tema === TEMAS.oscuro ? "oscuro" : "claro"}: clic para pasar a ${tema.otro}`;
     boton.setAttribute("aria-label", boton.title);
   }

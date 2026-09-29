@@ -91,7 +91,7 @@ export const INSUMOS = {
   for: { nombre: "Formaleta en madera (3 usos)", unidad: "m²", precio: 25459, tipo: "material", tienda: "alquiler de formaleta",
          fuente: "EMCALI 2025", ref: "Ítem 10003647: formaleta en madera 3 usos, incluye materiales, mano de obra e instalación. Los APU de concreto solo suman la mano de obra del vaciado; el material solo (tablero de 15 usos de Homecenter, $50.353/m² ÷ 15) dejaría columnas y vigas muy por debajo de las referencias oficiales de Cali", url: "https://www.emcali.com.co/documents/d/guest/lista-de-precios-emcali-2025-oficial", fecha: "2025", estado: "oficial" },
   pun: { nombre: "Puntilla con cabeza 2\"", unidad: "lb", precio: 4355, tipo: "material", tienda: "ferretería",
-         fuente: HC, ref: "Puntilla con cabeza 2\" 500 g ($4.800 → $9.600/kg)", url: "https://www.homecenter.com.co/homecenter-co/product/91606/puntilla-con-cabeza-2pg-500g/91606/", fecha: HOY, estado: "consultado" },
+         fuente: HC, ref: "Puntilla con cabeza 2\" 500 g ($4.800, o sea $9.600/kg)", url: "https://www.homecenter.com.co/homecenter-co/product/91606/puntilla-con-cabeza-2pg-500g/91606/", fecha: HOY, estado: "consultado" },
   cpa: { nombre: "Cerámica para pared", unidad: "m²", precio: 22153, tipo: "material", tienda: "almacén de cerámicas",
          fuente: HC, ref: "Pared cerámica plana blanco 30×60 Corona, caja 1,44 m²", url: "https://www.homecenter.com.co/homecenter-co/product/500901/pared-ceramica-plana-blanco-30x60cm-caja-144-m2-corona/500901/", fecha: HOY, estado: "consultado" },
   cpi: { nombre: "Cerámica para piso", unidad: "m²", tipo: "material", tienda: "almacén de cerámicas",

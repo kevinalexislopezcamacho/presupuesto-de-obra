@@ -87,7 +87,7 @@ presupuesto-obra-cali/
 │       ├── vistas/               Una pantalla por archivo (solo generan HTML)
 │       ├── render.js             Dibuja y pide los cálculos al backend
 │       ├── eventos.js            Clics y cambios → acciones
-│       └── utilidades/           Formato, fechas, Maps, portapapeles y tema claro/oscuro
+│       └── utilidades/           Formato, fechas, Maps, portapapeles, tema claro/oscuro, íconos y animación al bajar
 └── docs/
     ├── arquitectura.md           Capas, decisiones y flujo de una acción
     ├── api.md                    Rutas con ejemplos de petición y respuesta

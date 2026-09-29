@@ -37,12 +37,14 @@ textarea:focus, .campo input:focus, .campo select:focus { border-color: var(--ac
 /* Actividades que se pueden quitar de una parte */
 .chip.toggle { padding: 5px 12px; font-size: 14px; }
 .chip.toggle[aria-pressed="true"] { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); background: color-mix(in srgb, var(--ok) 10%, var(--card)); }
-.chip.toggle[aria-pressed="true"]::before { content: "✓ "; color: var(--ok); font-weight: 600; }
+.chip.toggle[aria-pressed="true"]::before { content: ""; display: inline-block; width: .85em; height: .85em; margin-right: .35em; vertical-align: -0.08em;
+  color: var(--ok); background: currentColor; -webkit-mask: var(--icono-si) center / contain no-repeat; mask: var(--icono-si) center / contain no-repeat; }
 .chip.toggle[aria-pressed="false"] { color: var(--muted); background: transparent; border-style: dashed; text-decoration: line-through; }
 .ejemplos { margin-top: 12px; display: grid; gap: 4px; }
 .ejemplos button { text-align: left; background: none; border: 0; padding: 5px 0; color: var(--muted); cursor: pointer; font-size: 15px; }
 .ejemplos button:hover:not(:disabled) { color: var(--ink); }
-.ejemplos button::before { content: "→ "; color: var(--accent); }
+.ejemplos button::before { content: ""; display: inline-block; width: .9em; height: .9em; margin-right: .45em; vertical-align: -0.1em;
+  background: var(--accent); -webkit-mask: var(--icono-flecha) center / contain no-repeat; mask: var(--icono-flecha) center / contain no-repeat; }
 .etiqueta { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
 
 /* Avisos */

@@ -29,7 +29,7 @@ export const REFERENCIAS_OFICIALES = {
              { fuente: "EMCALI 2025", url: URL_EMCALI, item: "10003627", desc: "Repello con mortero 3000 PSI", precio: 31300, nota: "espesor 2,5 a 3 cm; este APU es de 1,5 cm", equivalente: false }],
   "ACB-01": [gob("190524", "Enchape cerámica 20×30 de 1.ª calidad", 73541, "formato distinto (este APU usa 30×60)")],
   "ACB-02": [gob("200223", "Piso cerámica 40-42,5 × 40-42,5 cm, tráfico 3", 83408, "formato verificado más cercano (este APU usa 51×51)")],
-  "MES-01": [gob("140403", "Mesón en concreto A ≤ 60 cm, H = 5-8 cm", 126663, "sin enchape; este APU lo incluye")],
+  "MES-01": [gob("140403", "Mesón en concreto A hasta 60 cm, H = 5-8 cm", 126663, "sin enchape; este APU lo incluye")],
   "ACE-01": [gob("120101", "Acero de refuerzo flejado 60000 PSI", 6590, "por kg"),
              { fuente: "Cali 2026", url: URL_CALI, item: "138", desc: "Acero de refuerzo 60000 PSI", precio: 8096, nota: "por kg" },
              { fuente: "EMCALI 2025", url: URL_EMCALI, item: "10000521", desc: "Suministro, corte, figuración y colocación de acero", precio: 4854, nota: "por kg" }],

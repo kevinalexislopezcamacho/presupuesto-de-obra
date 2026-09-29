@@ -141,7 +141,8 @@
 .vista-compras .nom { flex: 1; min-width: 0; text-decoration: line-through; text-decoration-color: transparent; }
 .vista-compras li b { font-weight: 500; white-space: nowrap; }
 .caja { flex: none; width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--muted); display: grid; place-items: center; }
-.caja::after { content: "✓"; font-size: 12px; font-weight: 700; line-height: 1; color: var(--accent-ink); opacity: 0; }
+.caja::after { content: ""; width: 12px; height: 12px; background: var(--accent-ink); opacity: 0;
+  -webkit-mask: var(--icono-si) center / contain no-repeat; mask: var(--icono-si) center / contain no-repeat; }
 .compras-falta { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; }
 .compras-falta b { display: grid; font-weight: 600; }
 .compras-falta b > span { grid-area: 1 / 1; text-align: right; }
@@ -353,7 +354,8 @@ table.apu td:first-child { overflow-wrap: normal; word-break: normal; hyphens: a
 
 /* Parte marcada como remodelación */
 .chip.toggle-remodel[aria-pressed="true"] { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, var(--card)); }
-.chip.toggle-remodel[aria-pressed="true"]::before { content: "✓ "; color: var(--warn); font-weight: 600; }
+.chip.toggle-remodel[aria-pressed="true"]::before { content: ""; display: inline-block; width: .85em; height: .85em; margin-right: .35em; vertical-align: -0.08em;
+  color: var(--warn); background: currentColor; -webkit-mask: var(--icono-si) center / contain no-repeat; mask: var(--icono-si) center / contain no-repeat; }
 /* El nombre del ítem y su valor comparten la fila; el APU desplegado va debajo, a todo el ancho. */
 .fila.linea .linea-boton { flex: 1 1 0; }
 .fila.linea .val { flex: none; }

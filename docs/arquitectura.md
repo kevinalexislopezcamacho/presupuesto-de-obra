@@ -54,7 +54,7 @@ El backend está organizado en capas. Cada capa solo usa las que están debajo d
 | Carpeta o archivo | Responsabilidad |
 |---|---|
 | `index.html` | Estructura fija de la página: barra, contenedor principal y pie |
-| `css/` | `base.css` (colores claro y oscuro, ancho adaptable por pantalla), `componentes.css` (botones, campos, listas, etiquetas) y `pantallas.css` (estilos de cada paso; en celular, barra inferior fija; en escritorio, resultado en dos columnas) |
+| `css/` | `base.css` (una sola letra, Inter, también en el PDF; colores claro y oscuro; ancho adaptable por pantalla), `componentes.css` (botones, campos, listas, etiquetas) y `pantallas.css` (estilos de cada paso; en celular, barra inferior fija; en escritorio, resultado en dos columnas) |
 | `js/main.js` | Arranque: carga el catálogo, recupera el borrador, registra eventos y dibuja |
 | `js/config.js` | Dirección de la API |
 | `js/api/cliente.js` | Única parte que habla con el backend |
@@ -63,7 +63,7 @@ El backend está organizado en capas. Cada capa solo usa las que están debajo d
 | `js/vistas/` | Una función por pantalla. Solo generan HTML a partir del estado |
 | `js/render.js` | Decide qué pantalla dibujar, conserva el foco y pide el cálculo al backend cuando cambia la obra |
 | `js/eventos.js` | Traduce clics y cambios en acciones. Cada botón declara lo que hace con un atributo `data-*` |
-| `js/utilidades/` | Formato de números y textos, fechas hábiles, Google Maps, portapapeles y tema claro/oscuro |
+| `js/utilidades/` | Formato de números y textos, fechas hábiles, Google Maps, portapapeles, tema claro/oscuro, íconos dibujados (✓, ✗, sol y luna, que la letra no trae) y la animación de la portada al bajar |
 
 ### Flujo de una acción
 

@@ -5,6 +5,7 @@ import { estado } from "../estado/estado.js";
 import { catalogo, apu, nombreTipo, nombreCortoApu } from "../estado/catalogo.js";
 import { esc, pesos } from "../utilidades/formato.js";
 import { nav, cargando } from "./comunes.js";
+import { ICONO_SI, ICONO_NO } from "../utilidades/iconos.js";
 
 const enlace = (url, texto) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(texto)}</a>` : esc(texto));
 /** La fuente de un insumo: cada tienda con su precio (el de referencia es la mediana) o la única fuente. */
@@ -63,12 +64,12 @@ function seccionModelo() {
   return `<div class="seccion"><h2>¿Cómo entiende lo que escribes?</h2>
     <p>En tres pasos. Primero separa la frase en partes (“un baño y una cocina” son dos). Después decide qué es cada parte: si nombra el tipo (“bodega”, “tapia”, “pañetar”), esa palabra manda; si no, decide un modelo de Machine Learning (${esc(e.algoritmo)}) entrenado con ${e.frases} frases en ${e.clases.length} clases, y si duda (menos de ${e.umbralConfianza * 100} % de confianza) le pregunta. Por último lee cantidades y medidas con reglas (“4 muros”, “de 3 x 2,5”, “70 m2”).</p>
     <p><b>El modelo:</b> con validación cruzada de ${e.pliegues} partes (cada frase se prueba con un modelo que no la vio) acierta el <b>${Math.round(e.exactitud * 100)} %</b> (${e.aciertos} de ${e.nTest}).</p>
-    <div class="scroll"><table class="matriz"><thead><tr><th>Real ↓ Predicho →</th>${e.clases.map(c => `<th>${clase(c)}</th>`).join("")}</tr></thead>
+    <div class="scroll"><table class="matriz"><thead><tr><th>Real ↓ / Predicho</th>${e.clases.map(c => `<th>${clase(c)}</th>`).join("")}</tr></thead>
     <tbody>${e.clases.map(r => `<tr><th>${clase(r)}</th>${e.clases.map(p => `<td class="${r === p ? "diag" : ""}">${e.matriz[r][p]}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
     ${metricas(e)}
     <p style="margin-top:14px"><b>El intérprete completo:</b> entiende ${ei.aciertos} de ${ei.total} frases nuevas, que no están en el entrenamiento.</p>
     <details><summary>Ver las frases de prueba</summary><div class="scroll"><table><thead><tr><th>Frase</th><th>Entendió</th><th></th></tr></thead><tbody>
-      ${ei.detalle.map(x => `<tr><td>${esc(x.frase)}</td><td>${esc(describir(x.obtenido))}</td><td>${x.ok ? "✓" : "✗"}</td></tr>`).join("")}</tbody></table></div></details></div>`;
+      ${ei.detalle.map(x => `<tr><td>${esc(x.frase)}</td><td>${esc(describir(x.obtenido))}</td><td>${x.ok ? `<span role="img" aria-label="Acertó">${ICONO_SI}</span>` : `<span role="img" aria-label="Falló">${ICONO_NO}</span>`}</td></tr>`).join("")}</tbody></table></div></details></div>`;
 }
 
 export function pantallaFuentes() {
